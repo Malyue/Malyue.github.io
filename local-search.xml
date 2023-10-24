@@ -4,6 +4,33 @@
   
   
   <entry>
+    <title>golang八股</title>
+    <link href="/2023/10/24/golang%E5%85%AB%E8%82%A1/"/>
+    <url>/2023/10/24/golang%E5%85%AB%E8%82%A1/</url>
+    
+    <content type="html"><![CDATA[<p>秋招即将结束，在这里简单记录一下面试中常问的golang相关知识点（不定期更新）</p><h3 id="GMP模型"><a href="#GMP模型" class="headerlink" title="GMP模型"></a>GMP模型</h3><h3 id="GC机制"><a href="#GC机制" class="headerlink" title="GC机制"></a>GC机制</h3><h3 id="如何关闭一个goroutine"><a href="#如何关闭一个goroutine" class="headerlink" title="如何关闭一个goroutine"></a>如何关闭一个goroutine</h3><p>goroutine是go中一个比较重要的特性，而有时候开始一个goroutine，我们需要在另外一个协程去去它进行通信，例如告知该协程关闭应该如何处理？</p><p>goroutine之间的通信其实就是用<code>channel</code>,我们常用的就是向g中传递一个信号通道，并通过向该通道中发送停止信号而去中止该协程</p><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main<br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>&#123;<br>    quit := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-keyword">struct</span>&#123;&#125;)<br>    <span class="hljs-keyword">go</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> &#123;<br>        <span class="hljs-keyword">for</span> &#123;<br>            <span class="hljs-keyword">select</span> &#123;<br>            <span class="hljs-keyword">case</span> &lt;- quit:<br>                <span class="hljs-keyword">return</span><br>            <span class="hljs-keyword">default</span>:<br>                <span class="hljs-comment">// TODO</span><br>            &#125;<br>        &#125;<br>    &#125;<br>    quit &lt;- <span class="hljs-keyword">struct</span>&#123;&#125;<br>&#125;<br></code></pre></td></tr></table></figure>]]></content>
+    
+    
+    <categories>
+      
+      <category>golang</category>
+      
+      <category>面试</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>八股</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>测试</title>
     <link href="/2023/10/24/%E6%B5%8B%E8%AF%95/"/>
     <url>/2023/10/24/%E6%B5%8B%E8%AF%95/</url>
