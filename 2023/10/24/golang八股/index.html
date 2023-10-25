@@ -24,7 +24,7 @@
 <meta property="og:description" content="Golang八股  秋招即将结束，在这里简单记录一下面试中常问的golang相关知识点（不定期更新） GMP模型首先要知道协程是用户态线程，内核无感知，不像线程一样是由CPU来进行调度 GC机制内存逃逸netpoll内存分配模型goroutine如何关闭一个goroutinegoroutine是go中一个比较重要的特性，而有时候开始一个goroutine，我们需要在另外一个协程去去它进行通信，">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-10-24T14:03:10.000Z">
-<meta property="article:modified_time" content="2023-10-25T09:08:27.131Z">
+<meta property="article:modified_time" content="2023-10-25T09:26:50.389Z">
 <meta property="article:author" content="Malyue">
 <meta property="article:tag" content="八股">
 <meta name="twitter:card" content="summary_large_image">
@@ -261,7 +261,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.6k 字
+          2.1k 字
         
       </span>
     
@@ -272,7 +272,7 @@
         
         
         
-          14 分钟
+          18 分钟
         
       </span>
     
@@ -358,8 +358,19 @@
 </ol>
 <p>正常模式下，所有等待锁的goroutine按照FIFO顺序等待，唤醒的goroutine不会直接拥有锁，而是会和新请求goroutine竞争锁，新请求的goroutine会更容易抢占锁，<code>因为它正在CPU上执行</code>,所以刚刚唤醒的goroutine大概率竞争失败，在这种情况下，被唤醒的goroutine会加入到等待队列的前面</p>
 <ol start="2">
-<li>饥饿模式</li>
+<li>饥饿模式（公平锁）</li>
 </ol>
+<p>为了解决等待goroutine队列的长尾问题，饥饿模式下，直接由unlock把锁交给等待队列中排在第一位的goroutine(即队头)，同时饥饿模式下，新进来的goroutine不会参与抢锁也不会进入自旋状态，会直接进入等待队列的尾部，这样就避免旧的goroutine一直获取不到锁</p>
+<h3 id="饥饿模式的触发条件"><a href="#饥饿模式的触发条件" class="headerlink" title="饥饿模式的触发条件"></a>饥饿模式的触发条件</h3><p>当一个goroutine等待锁时间超过1ms时，或者当前队列只剩下一个goroutine，Mutex就切换到饥饿模式</p>
+<h3 id="自旋锁"><a href="#自旋锁" class="headerlink" title="自旋锁"></a>自旋锁</h3><p>是互斥锁的一种实现方式，当线程尝试获取一个锁时，如果发现这个锁被其他线程占用，它会不断地尝试获取锁，而不是放弃CPU的控制权，这个过程被称为自旋，能够有效地减少线程切换的开销、提高锁的性能，因为它避免了进程上下文的调度开销，对短时间内的线程阻塞是有效的</p>
+<p>但是如果是长时间的线程阻塞，如果不断自旋，就始终占用了一个CPU，就会使得程序的执行效率降低</p>
+<h3 id="Mutex允许自旋的条件"><a href="#Mutex允许自旋的条件" class="headerlink" title="Mutex允许自旋的条件"></a>Mutex允许自旋的条件</h3><ul>
+<li>锁已经被占用，且不处于饥饿状态</li>
+<li>积累的自旋次数小于最大自旋次数(active_spin&#x3D;4)</li>
+<li>CPU核数大于1</li>
+<li>有空闲的P</li>
+<li>当前g所挂载的P下，本地待运行队列为空（占用一个线程，避免使得后续的协程被阻塞）</li>
+</ul>
 <h2 id="Sync相关"><a href="#Sync相关" class="headerlink" title="Sync相关"></a>Sync相关</h2><h3 id="sync-WaitGroup"><a href="#sync-WaitGroup" class="headerlink" title="sync.WaitGroup"></a>sync.WaitGroup</h3><h3 id="sync-Cond"><a href="#sync-Cond" class="headerlink" title="sync.Cond"></a>sync.Cond</h3><h3 id="sync-Once"><a href="#sync-Once" class="headerlink" title="sync.Once"></a>sync.Once</h3><h2 id="Slice"><a href="#Slice" class="headerlink" title="Slice"></a>Slice</h2><h3 id="传递"><a href="#传递" class="headerlink" title="传递"></a>传递</h3><p>数据是<code>值传递</code>的，切片是<code>引用传递</code></p>
 <h3 id="切片结构"><a href="#切片结构" class="headerlink" title="切片结构"></a>切片结构</h3><h3 id="切片扩容"><a href="#切片扩容" class="headerlink" title="切片扩容"></a>切片扩容</h3><h2 id="Other"><a href="#Other" class="headerlink" title="Other"></a>Other</h2><h3 id="new和make的区别"><a href="#new和make的区别" class="headerlink" title="new和make的区别"></a>new和make的区别</h3><p><code>new(T)</code>是创建一个该类型的实例,返回指向该实例的指针，使用new来分配空间</p>
 <p><code>make</code>是使用于slice，channel，map类型的，主要是对该类型做一定的初始化，然后返回的是初始化后的实例，而不是和new一样是指针</p>
