@@ -16,15 +16,15 @@
   <meta name="author" content="Malyue">
   <meta name="keywords" content="">
   
-    <meta name="description" content="Golang八股font&gt;  秋招即将结束，在这里简单记录一下面试中常问的golang相关知识点（不定期更新） GMP模型GC机制如何关闭一个goroutinegoroutine是go中一个比较重要的特性，而有时候开始一个goroutine，我们需要在另外一个协程去去它进行通信，例如告知该协程关闭应该如何处理？ goroutine之间的通信其实就是用channel,我们常用的就是向g中传递一个">
+    <meta name="description" content="Golang八股  秋招即将结束，在这里简单记录一下面试中常问的golang相关知识点（不定期更新） GMP模型首先要知道协程是用户态线程，内核无感知，不像线程一样是由CPU来进行调度 GC机制内存逃逸netpoll内存分配模型goroutine如何关闭一个goroutinegoroutine是go中一个比较重要的特性，而有时候开始一个goroutine，我们需要在另外一个协程去去它进行通信，">
 <meta property="og:type" content="article">
 <meta property="og:title" content="golang八股">
 <meta property="og:url" content="http://example.com/2023/10/24/golang%E5%85%AB%E8%82%A1/index.html">
 <meta property="og:site_name" content="Malyue&#39;s Blog">
-<meta property="og:description" content="Golang八股font&gt;  秋招即将结束，在这里简单记录一下面试中常问的golang相关知识点（不定期更新） GMP模型GC机制如何关闭一个goroutinegoroutine是go中一个比较重要的特性，而有时候开始一个goroutine，我们需要在另外一个协程去去它进行通信，例如告知该协程关闭应该如何处理？ goroutine之间的通信其实就是用channel,我们常用的就是向g中传递一个">
+<meta property="og:description" content="Golang八股  秋招即将结束，在这里简单记录一下面试中常问的golang相关知识点（不定期更新） GMP模型首先要知道协程是用户态线程，内核无感知，不像线程一样是由CPU来进行调度 GC机制内存逃逸netpoll内存分配模型goroutine如何关闭一个goroutinegoroutine是go中一个比较重要的特性，而有时候开始一个goroutine，我们需要在另外一个协程去去它进行通信，">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-10-24T14:03:10.000Z">
-<meta property="article:modified_time" content="2023-10-24T14:14:43.882Z">
+<meta property="article:modified_time" content="2023-10-25T05:47:26.715Z">
 <meta property="article:author" content="Malyue">
 <meta property="article:tag" content="八股">
 <meta name="twitter:card" content="summary_large_image">
@@ -261,7 +261,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          422 字
+          1.1k 字
         
       </span>
     
@@ -272,7 +272,7 @@
         
         
         
-          4 分钟
+          10 分钟
         
       </span>
     
@@ -322,14 +322,32 @@
             
               <div class="markdown-body">
                 
-                <div align="center"> <font size="70"> Golang八股</font>font></div>
+                <div align="center"> <font size="70"> Golang八股</font></div>
 
 <p>秋招即将结束，在这里简单记录一下面试中常问的golang相关知识点（不定期更新）</p>
-<h3 id="GMP模型"><a href="#GMP模型" class="headerlink" title="GMP模型"></a>GMP模型</h3><h3 id="GC机制"><a href="#GC机制" class="headerlink" title="GC机制"></a>GC机制</h3><h3 id="如何关闭一个goroutine"><a href="#如何关闭一个goroutine" class="headerlink" title="如何关闭一个goroutine"></a>如何关闭一个goroutine</h3><p>goroutine是go中一个比较重要的特性，而有时候开始一个goroutine，我们需要在另外一个协程去去它进行通信，例如告知该协程关闭应该如何处理？</p>
+<h2 id="GMP模型"><a href="#GMP模型" class="headerlink" title="GMP模型"></a>GMP模型</h2><p>首先要知道协程是用户态线程，内核无感知，不像线程一样是由CPU来进行调度</p>
+<h2 id="GC机制"><a href="#GC机制" class="headerlink" title="GC机制"></a>GC机制</h2><h2 id="内存逃逸"><a href="#内存逃逸" class="headerlink" title="内存逃逸"></a>内存逃逸</h2><h2 id="netpoll"><a href="#netpoll" class="headerlink" title="netpoll"></a>netpoll</h2><h2 id="内存分配模型"><a href="#内存分配模型" class="headerlink" title="内存分配模型"></a>内存分配模型</h2><h2 id="goroutine"><a href="#goroutine" class="headerlink" title="goroutine"></a>goroutine</h2><h3 id="如何关闭一个goroutine"><a href="#如何关闭一个goroutine" class="headerlink" title="如何关闭一个goroutine"></a>如何关闭一个goroutine</h3><p>goroutine是go中一个比较重要的特性，而有时候开始一个goroutine，我们需要在另外一个协程去去它进行通信，例如告知该协程关闭应该如何处理？</p>
 <p>goroutine之间的通信其实就是用<code>channel</code>,我们常用的就是向g中传递一个信号通道，并通过向该通道中发送停止信号而去中止该协程</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main<br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>&#123;<br>    quit := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-keyword">struct</span>&#123;&#125;)<br>    <span class="hljs-keyword">go</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> &#123;<br>        <span class="hljs-keyword">for</span> &#123;<br>            <span class="hljs-keyword">select</span> &#123;<br>            <span class="hljs-keyword">case</span> &lt;- quit:<br>                <span class="hljs-keyword">return</span><br>            <span class="hljs-keyword">default</span>:<br>                <span class="hljs-comment">// TODO</span><br>            &#125;<br>        &#125;<br>    &#125;<br>    quit &lt;- <span class="hljs-keyword">struct</span>&#123;&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 
+<h2 id="Channel"><a href="#Channel" class="headerlink" title="Channel"></a>Channel</h2><h3 id="channel的特点"><a href="#channel的特点" class="headerlink" title="channel的特点"></a>channel的特点</h3><ol>
+<li>如果给nil的channel发送数据，会导致永久阻塞</li>
+<li>从nil的channel接收数据，会永久阻塞</li>
+<li>向已关闭的channel发送数据，会导致panic</li>
+<li>从已关闭的channel中读取数据，若缓冲区未满，则返回缓冲区的值，否则返回管道中数据类型的零值</li>
+<li>正常向channel中写入数据，如果channel中缓存区未满，则将值写入缓冲区，否则加入写阻塞队列，协程阻塞</li>
+<li>从channel中读取数据，如果channel中缓冲区存在数据，则直接取出，否则加入读等待队列，协程阻塞</li>
+<li>关闭一个nil channel会导致panic</li>
+<li>关闭一个已关闭的channel也会导致panic</li>
+</ol>
+<h3 id="如何得知channel是已关闭的"><a href="#如何得知channel是已关闭的" class="headerlink" title="如何得知channel是已关闭的"></a>如何得知channel是已关闭的</h3><p>我们知道，从已关闭接口中读取也是能正常读到数据的，和未关闭的没有比较大的区分，所以在go中，一般通过</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs go">data,ok := &lt;- <span class="hljs-keyword">chan</span><br></code></pre></td></tr></table></figure>
 
+<p>当ok&#x3D;false时，说明channel是被关闭了</p>
+<h3 id="channel的底层结构"><a href="#channel的底层结构" class="headerlink" title="channel的底层结构"></a>channel的底层结构</h3><h3 id="生产者消费者模型中，如果消费者消费速率过慢，那么如何实现当生产者往channel中写入数据时如果缓冲区已满则放弃写入"><a href="#生产者消费者模型中，如果消费者消费速率过慢，那么如何实现当生产者往channel中写入数据时如果缓冲区已满则放弃写入" class="headerlink" title="生产者消费者模型中，如果消费者消费速率过慢，那么如何实现当生产者往channel中写入数据时如果缓冲区已满则放弃写入"></a>生产者消费者模型中，如果消费者消费速率过慢，那么如何实现当生产者往channel中写入数据时如果缓冲区已满则放弃写入</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">for</span>&#123;<br>    <span class="hljs-keyword">select</span>&#123;<br>    <span class="hljs-keyword">case</span> ch &lt;- data:<br>        <span class="hljs-comment">// TODO</span><br>    <span class="hljs-keyword">default</span>:<br>        <span class="hljs-comment">// TODO</span><br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>通过select来实现，当写入时执行某个操作，如果写入失败则执行default</p>
+<h2 id="Context"><a href="#Context" class="headerlink" title="Context"></a>Context</h2><h2 id="Mutex"><a href="#Mutex" class="headerlink" title="Mutex"></a>Mutex</h2><h2 id="Sync相关"><a href="#Sync相关" class="headerlink" title="Sync相关"></a>Sync相关</h2><h3 id="sync-WaitGroup"><a href="#sync-WaitGroup" class="headerlink" title="sync.WaitGroup"></a>sync.WaitGroup</h3><h3 id="sync-Cond"><a href="#sync-Cond" class="headerlink" title="sync.Cond"></a>sync.Cond</h3><h3 id="sync-Once"><a href="#sync-Once" class="headerlink" title="sync.Once"></a>sync.Once</h3>
                 
               </div>
             
