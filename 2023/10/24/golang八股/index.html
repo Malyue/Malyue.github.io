@@ -24,7 +24,7 @@
 <meta property="og:description" content="Golang八股  秋招即将结束，在这里简单记录一下面试中常问的golang相关知识点（不定期更新） GMP模型首先要知道协程是用户态线程，内核无感知，不像线程一样是由CPU来进行调度 GC机制内存逃逸netpoll内存分配模型goroutine如何关闭一个goroutinegoroutine是go中一个比较重要的特性，而有时候开始一个goroutine，我们需要在另外一个协程去去它进行通信，">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-10-24T14:03:10.000Z">
-<meta property="article:modified_time" content="2023-10-25T05:47:26.715Z">
+<meta property="article:modified_time" content="2023-10-25T08:33:09.082Z">
 <meta property="article:author" content="Malyue">
 <meta property="article:tag" content="八股">
 <meta name="twitter:card" content="summary_large_image">
@@ -261,7 +261,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.1k 字
+          1.2k 字
         
       </span>
     
@@ -272,7 +272,7 @@
         
         
         
-          10 分钟
+          11 分钟
         
       </span>
     
@@ -347,7 +347,9 @@
 <h3 id="channel的底层结构"><a href="#channel的底层结构" class="headerlink" title="channel的底层结构"></a>channel的底层结构</h3><h3 id="生产者消费者模型中，如果消费者消费速率过慢，那么如何实现当生产者往channel中写入数据时如果缓冲区已满则放弃写入"><a href="#生产者消费者模型中，如果消费者消费速率过慢，那么如何实现当生产者往channel中写入数据时如果缓冲区已满则放弃写入" class="headerlink" title="生产者消费者模型中，如果消费者消费速率过慢，那么如何实现当生产者往channel中写入数据时如果缓冲区已满则放弃写入"></a>生产者消费者模型中，如果消费者消费速率过慢，那么如何实现当生产者往channel中写入数据时如果缓冲区已满则放弃写入</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">for</span>&#123;<br>    <span class="hljs-keyword">select</span>&#123;<br>    <span class="hljs-keyword">case</span> ch &lt;- data:<br>        <span class="hljs-comment">// TODO</span><br>    <span class="hljs-keyword">default</span>:<br>        <span class="hljs-comment">// TODO</span><br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 
 <p>通过select来实现，当写入时执行某个操作，如果写入失败则执行default</p>
-<h2 id="Context"><a href="#Context" class="headerlink" title="Context"></a>Context</h2><h2 id="Mutex"><a href="#Mutex" class="headerlink" title="Mutex"></a>Mutex</h2><h2 id="Sync相关"><a href="#Sync相关" class="headerlink" title="Sync相关"></a>Sync相关</h2><h3 id="sync-WaitGroup"><a href="#sync-WaitGroup" class="headerlink" title="sync.WaitGroup"></a>sync.WaitGroup</h3><h3 id="sync-Cond"><a href="#sync-Cond" class="headerlink" title="sync.Cond"></a>sync.Cond</h3><h3 id="sync-Once"><a href="#sync-Once" class="headerlink" title="sync.Once"></a>sync.Once</h3>
+<h2 id="Context"><a href="#Context" class="headerlink" title="Context"></a>Context</h2><h2 id="Mutex"><a href="#Mutex" class="headerlink" title="Mutex"></a>Mutex</h2><h2 id="Sync相关"><a href="#Sync相关" class="headerlink" title="Sync相关"></a>Sync相关</h2><h3 id="sync-WaitGroup"><a href="#sync-WaitGroup" class="headerlink" title="sync.WaitGroup"></a>sync.WaitGroup</h3><h3 id="sync-Cond"><a href="#sync-Cond" class="headerlink" title="sync.Cond"></a>sync.Cond</h3><h3 id="sync-Once"><a href="#sync-Once" class="headerlink" title="sync.Once"></a>sync.Once</h3><h2 id="Other"><a href="#Other" class="headerlink" title="Other"></a>Other</h2><h3 id="new和make的区别"><a href="#new和make的区别" class="headerlink" title="new和make的区别"></a>new和make的区别</h3><p><code>new(T)</code>是创建一个该类型的实例,返回指向该实例的指针，使用new来分配空间</p>
+<p><code>make</code>是使用于slice，channel，map类型的，主要是对该类型做一定的初始化，然后返回的是初始化后的实例，而不是和new一样是指针</p>
+
                 
               </div>
             
