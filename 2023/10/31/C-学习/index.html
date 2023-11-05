@@ -16,21 +16,23 @@
   <meta name="author" content="Malyue">
   <meta name="keywords" content="">
   
-    <meta name="description" content="三大范式 第一范式：每个列不可再分 第二范式：在第一范式基础上，非主键都完全依赖于主键，而不是依赖于主键的一部分 第三范式：在第二范式的基础上，非主键只依赖于主键，不依赖于其他非主键  日志WALWAL(write ahead log),即预写日志，在写操作执行前将其先用日志记录下来 这与redis的不同，redis的AOF操作是写后日志，而Mysql中则是使用了该方法 mysql中主要有四种日志">
+    <meta name="description" content="C++虚函数C++虚函数的作用是实现动态多态，即让基类的指针或者引用能够根据实际指向的对象类型来调用相应的成员函数，虚函数可以在子类中被覆盖(重写)，从而实现多态。纯虚函数是一种特殊的虚函数，没有函数体，只有声明，并且要求子类必须重写它。 含有纯虚函数的类叫做抽象类，它不能创建对象。 红黑树和AVL树STL容器">
 <meta property="og:type" content="article">
-<meta property="og:title" content="mysql八股">
-<meta property="og:url" content="http://example.com/2023/10/25/mysql%E5%85%AB%E8%82%A1/index.html">
+<meta property="og:title" content="C++学习">
+<meta property="og:url" content="http://example.com/2023/10/31/C-%E5%AD%A6%E4%B9%A0/index.html">
 <meta property="og:site_name" content="Malyue&#39;s Blog">
-<meta property="og:description" content="三大范式 第一范式：每个列不可再分 第二范式：在第一范式基础上，非主键都完全依赖于主键，而不是依赖于主键的一部分 第三范式：在第二范式的基础上，非主键只依赖于主键，不依赖于其他非主键  日志WALWAL(write ahead log),即预写日志，在写操作执行前将其先用日志记录下来 这与redis的不同，redis的AOF操作是写后日志，而Mysql中则是使用了该方法 mysql中主要有四种日志">
+<meta property="og:description" content="C++虚函数C++虚函数的作用是实现动态多态，即让基类的指针或者引用能够根据实际指向的对象类型来调用相应的成员函数，虚函数可以在子类中被覆盖(重写)，从而实现多态。纯虚函数是一种特殊的虚函数，没有函数体，只有声明，并且要求子类必须重写它。 含有纯虚函数的类叫做抽象类，它不能创建对象。 红黑树和AVL树STL容器">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2023-10-25T08:33:43.000Z">
-<meta property="article:modified_time" content="2023-11-05T12:12:37.484Z">
+<meta property="article:published_time" content="2023-10-30T16:00:32.000Z">
+<meta property="article:modified_time" content="2023-10-30T16:03:40.840Z">
 <meta property="article:author" content="Malyue">
+<meta property="article:tag" content="八股">
+<meta property="article:tag" content="C++">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>mysql八股 - Malyue&#39;s Blog</title>
+  <title>C++学习 - Malyue&#39;s Blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -237,7 +239,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="mysql八股"></span>
+            <span id="subtitle" data-typed-text="C++学习"></span>
           
         </div>
 
@@ -248,8 +250,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-10-25 16:33" pubdate>
-          2023年10月25日 下午
+        <time datetime="2023-10-31 00:00" pubdate>
+          2023年10月31日 凌晨
         </time>
       </span>
     
@@ -260,7 +262,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          291 字
+          154 字
         
       </span>
     
@@ -271,7 +273,7 @@
         
         
         
-          3 分钟
+          2 分钟
         
       </span>
     
@@ -316,23 +318,14 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">mysql八股</h1>
+            <h1 id="seo-header">C++学习</h1>
             
             
               <div class="markdown-body">
                 
-                <h2 id="三大范式"><a href="#三大范式" class="headerlink" title="三大范式"></a>三大范式</h2><ul>
-<li>第一范式：每个列不可再分</li>
-<li>第二范式：在第一范式基础上，非主键都完全依赖于主键，而不是依赖于主键的一部分</li>
-<li>第三范式：在第二范式的基础上，非主键只依赖于主键，不依赖于其他非主键</li>
-</ul>
-<h2 id="日志"><a href="#日志" class="headerlink" title="日志"></a>日志</h2><h3 id="WAL"><a href="#WAL" class="headerlink" title="WAL"></a>WAL</h3><p>WAL(write ahead log),即预写日志，在写操作执行前将其先用日志记录下来</p>
-<p>这与redis的不同，redis的AOF操作是写后日志，而Mysql中则是使用了该方法</p>
-<p>mysql中主要有四种日志，接下来逐一了解</p>
-<h3 id="binlog"><a href="#binlog" class="headerlink" title="binlog"></a>binlog</h3><h3 id="redo-log"><a href="#redo-log" class="headerlink" title="redo log"></a>redo log</h3><p>redo log - 重做日志</p>
-<p>在数据库中至关重要，确保了数据库的可靠性和持久性，是<code>事务处理</code>和<code>数据恢复</code>的关键组成</p>
-<h3 id="undo-log"><a href="#undo-log" class="headerlink" title="undo log"></a>undo log</h3><p>undo log - 撤销日志</p>
-<h3 id="relay-log"><a href="#relay-log" class="headerlink" title="relay log"></a>relay log</h3>
+                <h3 id="C-虚函数"><a href="#C-虚函数" class="headerlink" title="C++虚函数"></a>C++虚函数</h3><p>C++虚函数的作用是实现动态多态，即让基类的指针或者引用能够根据实际指向的对象类型来调用相应的成员函数，虚函数可以在子类中被覆盖(重写)，从而实现多态。纯虚函数是一种特殊的虚函数，没有函数体，只有声明，并且要求子类必须重写它。</p>
+<p>含有纯虚函数的类叫做抽象类，它不能创建对象。</p>
+<h2 id="红黑树和AVL树"><a href="#红黑树和AVL树" class="headerlink" title="红黑树和AVL树"></a>红黑树和AVL树</h2><h3 id="STL容器"><a href="#STL容器" class="headerlink" title="STL容器"></a>STL容器</h3>
                 
               </div>
             
@@ -340,6 +333,43 @@
             <div>
               <div class="post-metas my-3">
   
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/C/" class="category-chain-item">C++</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/C/%E9%9D%A2%E8%AF%95/" class="category-chain-item">面试</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%85%AB%E8%82%A1/" class="print-no-link">#八股</a>
+      
+        <a href="/tags/C/" class="print-no-link">#C++</a>
+      
+    </div>
   
 </div>
 
@@ -349,8 +379,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>mysql八股</div>
-      <div>http://example.com/2023/10/25/mysql八股/</div>
+      <div>C++学习</div>
+      <div>http://example.com/2023/10/31/C-学习/</div>
     </div>
     <div class="license-meta">
       
@@ -362,7 +392,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2023年10月25日</div>
+          <div>2023年10月31日</div>
         </div>
       
       
@@ -394,18 +424,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/10/25/redis%E5%85%AB%E8%82%A1/" title="redis八股">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">redis八股</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/10/24/golang%E5%85%AB%E8%82%A1/" title="golang八股">
-                        <span class="hidden-mobile">golang八股</span>
+                      <a href="/2023/10/25/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" title="操作系统">
+                        <span class="hidden-mobile">操作系统</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

@@ -16,16 +16,17 @@
   <meta name="author" content="Malyue">
   <meta name="keywords" content="">
   
-    <meta name="description" content="简单的记录一些想写的内容">
+    <meta name="description" content="IPIP地址与子网划分 A类用于大型网络（能容纳网络126个，主机1677214台）  B类用于中型网络（能容纳网络16384个，主机65534台）  C类用于小型网络（容纳网络2097152个，主机254台）  D类用于组播（多目的地址的发送）  E类用于实验  A: 0.0.0.0 -&gt; 126.255.255.255 第一位 00000000  B: 128.0.0.0 -&gt; 1">
 <meta property="og:type" content="article">
 <meta property="og:title" content="计算机网络">
 <meta property="og:url" content="http://example.com/2023/10/25/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/index.html">
 <meta property="og:site_name" content="Malyue&#39;s Blog">
-<meta property="og:description" content="简单的记录一些想写的内容">
+<meta property="og:description" content="IPIP地址与子网划分 A类用于大型网络（能容纳网络126个，主机1677214台）  B类用于中型网络（能容纳网络16384个，主机65534台）  C类用于小型网络（容纳网络2097152个，主机254台）  D类用于组播（多目的地址的发送）  E类用于实验  A: 0.0.0.0 -&gt; 126.255.255.255 第一位 00000000  B: 128.0.0.0 -&gt; 1">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-10-25T08:35:40.000Z">
-<meta property="article:modified_time" content="2023-10-25T08:35:40.381Z">
+<meta property="article:modified_time" content="2023-10-26T03:26:54.081Z">
 <meta property="article:author" content="Malyue">
+<meta property="article:tag" content="八股">
 <meta name="twitter:card" content="summary_large_image">
   
   
@@ -260,7 +261,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          0 字
+          416 字
         
       </span>
     
@@ -271,7 +272,7 @@
         
         
         
-          1 分钟
+          4 分钟
         
       </span>
     
@@ -321,7 +322,35 @@
             
               <div class="markdown-body">
                 
-                
+                <h2 id="IP"><a href="#IP" class="headerlink" title="IP"></a>IP</h2><h3 id="IP地址与子网划分"><a href="#IP地址与子网划分" class="headerlink" title="IP地址与子网划分"></a>IP地址与子网划分</h3><ul>
+<li><p>A类用于大型网络（能容纳网络126个，主机1677214台）</p>
+</li>
+<li><p>B类用于中型网络（能容纳网络16384个，主机65534台）</p>
+</li>
+<li><p>C类用于小型网络（容纳网络2097152个，主机254台）</p>
+</li>
+<li><p>D类用于组播（多目的地址的发送）</p>
+</li>
+<li><p>E类用于实验</p>
+</li>
+<li><p>A: 0.0.0.0 -&gt; 126.255.255.255 第一位 00000000</p>
+</li>
+<li><p>B: 128.0.0.0 -&gt; 191.255.255.255 第一位 10000000</p>
+</li>
+<li><p>C: 192.0.0.0 -&gt; 223.255.255.255 第一位 11000000</p>
+</li>
+<li><p>D: 224.0.0.0 -&gt; 239.255.255.255 第一位 11100000</p>
+</li>
+<li><p>E: 240.0.0.0 -&gt; 247.255.255.255 第一位 11110000</p>
+</li>
+</ul>
+<p>私网地址:</p>
+<ul>
+<li>A: 10.0.0.1 - 10.255.255.254</li>
+<li>B: 172.16.0.1 - 172.31.255.254</li>
+<li>C: 192.168.0.1 - 192.168.255.254</li>
+</ul>
+
                 
               </div>
             
@@ -329,6 +358,34 @@
             <div>
               <div class="post-metas my-3">
   
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" class="category-chain-item">计算机网络</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%85%AB%E8%82%A1/" class="print-no-link">#八股</a>
+      
+    </div>
   
 </div>
 
