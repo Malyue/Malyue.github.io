@@ -16,24 +16,23 @@
   <meta name="author" content="Malyue">
   <meta name="keywords" content="">
   
-    <meta name="description" content="leetcode-443  压缩字符串 原链接 leetcode-433 mid  这一题没什么太大的复杂地方，题意就是对字符串进行压缩，将型如aabbccc压缩为a2b2c3的形式 直接遍历一遍即可，双指针，left和right，left是一组单词的开始，而right往后遍历找到第一个非chars[left]的字母或者找到字符串结尾即结束，然后将left跳到right当前的位置即可，对不起它mi">
+    <meta name="description" content="golang的经典项目 - mit 6.824，最后的lab就是基于raft实现的一个kv数据库 那么什么是raft算法？首先要知道raft是一种分布式一致性共识算法，是一个非拜占庭的一致性算法（后面会介绍什么是拜占庭问题），简单来说，即raft认为所有通信是正确的而非伪造的，则在N个节点的情况下(N为奇数)，可以最多容忍(N-1)&#x2F;2(N-1)&#x2F;2个单点故障 分布式共识算法如">
 <meta property="og:type" content="article">
-<meta property="og:title" content="leetcode-443 压缩字符串">
-<meta property="og:url" content="http://example.com/2023/11/19/leetcode-443-%E5%8E%8B%E7%BC%A9%E5%AD%97%E7%AC%A6%E4%B8%B2/index.html">
+<meta property="og:title" content="初识raft(1)">
+<meta property="og:url" content="http://example.com/2023/11/19/raft/index.html">
 <meta property="og:site_name" content="Malyue&#39;s Blog">
-<meta property="og:description" content="leetcode-443  压缩字符串 原链接 leetcode-433 mid  这一题没什么太大的复杂地方，题意就是对字符串进行压缩，将型如aabbccc压缩为a2b2c3的形式 直接遍历一遍即可，双指针，left和right，left是一组单词的开始，而right往后遍历找到第一个非chars[left]的字母或者找到字符串结尾即结束，然后将left跳到right当前的位置即可，对不起它mi">
+<meta property="og:description" content="golang的经典项目 - mit 6.824，最后的lab就是基于raft实现的一个kv数据库 那么什么是raft算法？首先要知道raft是一种分布式一致性共识算法，是一个非拜占庭的一致性算法（后面会介绍什么是拜占庭问题），简单来说，即raft认为所有通信是正确的而非伪造的，则在N个节点的情况下(N为奇数)，可以最多容忍(N-1)&#x2F;2(N-1)&#x2F;2个单点故障 分布式共识算法如">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2023-11-19T05:02:17.000Z">
-<meta property="article:modified_time" content="2023-11-19T05:57:27.523Z">
+<meta property="article:published_time" content="2023-11-19T05:57:38.000Z">
+<meta property="article:modified_time" content="2023-11-19T07:05:57.225Z">
 <meta property="article:author" content="Malyue">
-<meta property="article:tag" content="算法">
-<meta property="article:tag" content="leetcode">
-<meta property="article:tag" content="每日一题">
+<meta property="article:tag" content="raft">
+<meta property="article:tag" content="分布式">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>leetcode-443 压缩字符串 - Malyue&#39;s Blog</title>
+  <title>初识raft(1) - Malyue&#39;s Blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -240,7 +239,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="leetcode-443 压缩字符串"></span>
+            <span id="subtitle" data-typed-text="初识raft(1)"></span>
           
         </div>
 
@@ -251,7 +250,7 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-11-19 13:02" pubdate>
+        <time datetime="2023-11-19 13:57" pubdate>
           2023年11月19日 下午
         </time>
       </span>
@@ -263,7 +262,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          207 字
+          2.7k 字
         
       </span>
     
@@ -274,7 +273,7 @@
         
         
         
-          2 分钟
+          23 分钟
         
       </span>
     
@@ -319,16 +318,53 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">leetcode-443 压缩字符串</h1>
+            <h1 id="seo-header">初识raft(1)</h1>
             
             
               <div class="markdown-body">
                 
-                <h1 id="leetcode-443-压缩字符串"><a href="#leetcode-443-压缩字符串" class="headerlink" title="leetcode-443  压缩字符串"></a>leetcode-443  压缩字符串</h1><blockquote>
-<p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/string-compression/?envType=study-plan-v2&envId=leetcode-75">原链接 leetcode-433 mid</a></p>
-</blockquote>
-<p>这一题没什么太大的复杂地方，题意就是对字符串进行压缩，将型如<code>aabbccc</code>压缩为<code>a2b2c3</code>的形式</p>
-<p>直接遍历一遍即可，双指针，left和right，left是一组单词的开始，而right往后遍历找到第一个非chars[left]的字母或者找到字符串结尾即结束，然后将left跳到right当前的位置即可，对不起它mid的难度，所以就不过多记录了。</p>
+                <p>golang的经典项目 - mit 6.824，最后的lab就是基于raft实现的一个kv数据库</p>
+<p>那么什么是raft算法？首先要知道raft是一种分布式一致性共识算法，是一个非拜占庭的一致性算法（后面会介绍什么是拜占庭问题），简单来说，即raft认为所有通信是正确的而非伪造的，则在N个节点的情况下(N为奇数)，可以最多容忍(N-1)&#x2F;2(N-1)&#x2F;2个单点故障</p>
+<h2 id="分布式共识算法"><a href="#分布式共识算法" class="headerlink" title="分布式共识算法"></a>分布式共识算法</h2><h3 id="如何提高大规模数据的读写性能"><a href="#如何提高大规模数据的读写性能" class="headerlink" title="如何提高大规模数据的读写性能"></a>如何提高大规模数据的读写性能</h3><p>先来思考一个问题，正常我们写demo的时候，都是单mysql节点作为一个持久化的中间件，那么如果数据过多，mysql支持不了这么高的并发量要怎么解决？</p>
+<p>我们常说加钱可以解决性能问题，其实就是纵向扩展，即换个更好的服务器，加硬件加配置，这个方法简单有效，但是往往涉及一个问题，即性能到达一定程度之后，想要再进一步的难度就会陡然提升</p>
+<p>那这时候往往还有另外一种思路，即横向扩展，不同于纵向扩展，往单服务器去堆配置了，而是用多台服务器来解决同一个问题，但是这种扩展方式又涉及了另外一个问题，我们知道网络情况是不稳定的，出现什么情况都有可能，那么多服务器之间的通信就很容易出现问题，例如我用了mysql的主从模式，服务往主数据库写入数据时，在同步到从数据库时消息没同步过去，这时候不就会导致在这段时间内的一个主从数据不一致的问题，即我明明写入了消息，但是在读时却查找不到。</p>
+<p>所以这种方式在网络环境理想化的情况下是非常好的，通过横向扩展，不仅能将节点压力分流，还可以做到数据的容灾备份等，从而提高系统性能的一个上限，但是使用这种方法，我们就要想办法解决前面说的一个网络状态的问题，将该问题出现的情况细分一下，其实包括了很多要处理的问题：</p>
+<ol>
+<li>多节点之间的数据一致性问题 - 最终一致性或者强一致性</li>
+<li>可用性问题</li>
+<li>脑裂、崩溃、超时等问题</li>
+</ol>
+<p>所以多节点比单节点复杂了很多，单节点的操作处理是很稳定的，要么成功要么失败，且不涉及多链路的一个操作，耗时也较短</p>
+<p>但是单节点如果出现了崩溃则会直接导致整个服务的不可用，而且由于单节点没有分流，很容易出现大流量而使其宕机</p>
+<h3 id="分布式基础-CAP理论"><a href="#分布式基础-CAP理论" class="headerlink" title="分布式基础 - CAP理论"></a>分布式基础 - CAP理论</h3><p>学习分布式最开始肯定会接触到CAP理论，这是最经典的分布式系统理论(Consistency-Availability,Partition tolerance Theory)</p>
+<ul>
+<li>C：Consistency 一致性</li>
+</ul>
+<p>一致性强调是数据的正确性，即强一致性，具体到操作上来看，就是每个读操作，要么读到最新的数据，要么读操作失败，而不会存在读到一个中间的状态，这就要求设计分布式系统时需要把整个分布式系统作为一个不可拆分的一个整体。</p>
+<ul>
+<li>A：Availability 可用性</li>
+</ul>
+<p>可用性是从用户角度来看，不只是服务能否成功响应，还包括了能否在一定时间内响应，当用户等待较长时间时也同样认为是不可用的</p>
+<ul>
+<li>P：Partition tolerance 分区容忍性</li>
+</ul>
+<p>这个是从网络角度来看的，前面也说了网络环境是不可靠的，而网络分区则是因为节点之间网络通讯的失败而产生的，例如AB两节点，由于网络异常问题无法通信，这时候就认为出现了网络分区，而P的角度是希望在网络环境不可靠的情况下，系统仍然是正常运行的，不至于因为这个网络问题而使得服务崩溃的问题</p>
+<p>而CAP理论中，它主要指出了一个问题，即分布式系统的设计中，最多只能同时满足CAP中的两个，即只有三种设计架构，满足CA，CP或AP</p>
+<p>而由于网络环境的不可靠，分区是很可能会出现的，所以往往设计的时候需要考量P，即通常是<code>AP</code>或<code>CP</code>两种架构</p>
+<p><code>CP</code>是强调数据的准确性，它希望的是一种强一致性的状态，宁愿舍弃一定的可用性，也要保证获得的数据是必定最新的</p>
+<p><code>AP</code>是强调服务的可用性，可以牺牲一定的数据的准确性，即容忍获得一个旧数据或一个错误的数据，来保证客户端能及时获得一个响应</p>
+<p>在后面又基于CAP出现了一个新的理论，是作为一致性和可用性权衡的一个结果，是由CAP逐步演化过来的，其来源于对大型互联网分布式实践的总结，称为BASE理论。</p>
+<h4 id="C的问题"><a href="#C的问题" class="headerlink" title="C的问题"></a>C的问题</h4><h5 id="即时一致性问题"><a href="#即时一致性问题" class="headerlink" title="即时一致性问题"></a>即时一致性问题</h5><p>当一个服务端有master和follower两个节点，这时候向master节点写入了一个数据x&#x3D;3，而master这时候要按照设定好的同步规则，去将该写入同步给follower节点，而在同步过程中，客户端发起了一个请求，查询x的值，这时候请求就打到了follower节点，而这时候的返回值是不确定的，读到的数据和客户端的预期结果就出现了偏差，如果是同步策略是同步的，那么就能正确读到，而如果是异步操作，那么就无法保证数据的正确了</p>
+<h5 id="顺序一致性问题"><a href="#顺序一致性问题" class="headerlink" title="顺序一致性问题"></a>顺序一致性问题</h5><p>这个问题比较有意思，其实主要是因为网络问题的存在，加上tcp的重传机制产生的</p>
+<p>考虑这样一个场景，客户端向master节点发送了两个set请求，例如<code>set x = 3;set x = 4</code>,而这时master会向从节点按序同步该两个操作，但是由于网络问题，可能第一个<code>set x = 3</code>操作在网络传输中丢失了，然后<code>set x = 4</code>操作先到达follower了，而<code>set x = 3</code>操作由于重传机制，后到达了从节点，而会使得从节点的数据变为了<code>x=3</code>,但是在matser中<code>x=4</code>,这样就是一个比较严重的问题了，数据的更改丢失了，导致后面的结果是错误的。</p>
+<h4 id="A的问题"><a href="#A的问题" class="headerlink" title="A的问题"></a>A的问题</h4><p>想解决C的问题，其实用同步+串行化操作即可，只有确保将数据都同步完了，才给客户端响应，而这样无论客户端请求哪个节点，获得的数据都是一致性的</p>
+<p>但是这样就会导致客户端在写入时进入阻塞的时间变长，因为需要等待所有数据的同步，这种方法将多节点系统看成了一个整体，类似于单节点一般，写入时就确保了数据的一致性，但是也存在了其他的问题</p>
+<p>比如某个follower节点宕机了，这时由于数据没有所有节点都同步完成，则服务不会响应，那么对于客户端来说，这就是一个不可用的情况，而且过度的放大了故障，将单节点故障扩为了整体系统的故障</p>
+<h3 id="分布式一致性共识算法"><a href="#分布式一致性共识算法" class="headerlink" title="分布式一致性共识算法"></a>分布式一致性共识算法</h3><p>前面讲了CAP的问题，但是实际的系统设计并非非黑即白，C和A并非是绝对的对立，存在一个互相协调的存在</p>
+<p>分布式共识算法，就是做的一个找到了一定取舍的一个设计</p>
+<p>分布式一致性共识算法，指的是在分布式系统种，使得所有节点对同一份数据的认知能够达成共识的算法，它主要强调的是一致性问题，但是通过对应的算法机制，在尽可能少的牺牲C的基础上，去提高了A的水平</p>
+<p>而raft则是一种一致性共识算法，在可用性A上，raft能保证当前分布式系统中<code>存在半数以上节点存活时，系统是稳定可用的</code>,同时请求耗时取决于多数派的下限，而非所有节点的下限，一定程度上避免了木桶短板效应</p>
+<p>而在C上，raft算法能够保证数据满足最终一致性，而且在工程化的落地上，经常也会被修改而去保证可以保证数据的强一致性</p>
 
                 
               </div>
@@ -341,11 +377,9 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/%E7%AE%97%E6%B3%95/" class="print-no-link">#算法</a>
+        <a href="/tags/raft/" class="print-no-link">#raft</a>
       
-        <a href="/tags/leetcode/" class="print-no-link">#leetcode</a>
-      
-        <a href="/tags/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98/" class="print-no-link">#每日一题</a>
+        <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" class="print-no-link">#分布式</a>
       
     </div>
   
@@ -357,8 +391,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>leetcode-443 压缩字符串</div>
-      <div>http://example.com/2023/11/19/leetcode-443-压缩字符串/</div>
+      <div>初识raft(1)</div>
+      <div>http://example.com/2023/11/19/raft/</div>
     </div>
     <div class="license-meta">
       
@@ -402,18 +436,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/11/19/raft/" title="初识raft(1)">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">初识raft(1)</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/11/09/sync-Pool%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" title="sync.Pool源码解析">
-                        <span class="hidden-mobile">sync.Pool源码解析</span>
+                      <a href="/2023/11/19/leetcode-443-%E5%8E%8B%E7%BC%A9%E5%AD%97%E7%AC%A6%E4%B8%B2/" title="leetcode-443 压缩字符串">
+                        <span class="hidden-mobile">leetcode-443 压缩字符串</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
