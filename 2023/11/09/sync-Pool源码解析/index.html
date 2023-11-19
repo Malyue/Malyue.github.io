@@ -16,23 +16,24 @@
   <meta name="author" content="Malyue">
   <meta name="keywords" content="">
   
-    <meta name="description" content="C++虚函数C++虚函数的作用是实现动态多态，即让基类的指针或者引用能够根据实际指向的对象类型来调用相应的成员函数，虚函数可以在子类中被覆盖(重写)，从而实现多态。纯虚函数是一种特殊的虚函数，没有函数体，只有声明，并且要求子类必须重写它。 含有纯虚函数的类叫做抽象类，它不能创建对象。 红黑树和AVL树STL容器">
+    <meta name="description" content="Sync.Pool 功能一句话来说，就是用来保存和复用临时对象，减少内存的分配，降低GC的压力 example123456789101112type Student struct&amp;#123;    Name string    Age int32    Remark [1024]byte&amp;#125;var buf,_ &#x3D; json.Marshal(Student&amp;#123;Name:&quot;G">
 <meta property="og:type" content="article">
-<meta property="og:title" content="C++学习">
-<meta property="og:url" content="http://example.com/2023/10/31/C-%E5%AD%A6%E4%B9%A0/index.html">
+<meta property="og:title" content="sync.Pool源码解析">
+<meta property="og:url" content="http://example.com/2023/11/09/sync-Pool%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/index.html">
 <meta property="og:site_name" content="Malyue&#39;s Blog">
-<meta property="og:description" content="C++虚函数C++虚函数的作用是实现动态多态，即让基类的指针或者引用能够根据实际指向的对象类型来调用相应的成员函数，虚函数可以在子类中被覆盖(重写)，从而实现多态。纯虚函数是一种特殊的虚函数，没有函数体，只有声明，并且要求子类必须重写它。 含有纯虚函数的类叫做抽象类，它不能创建对象。 红黑树和AVL树STL容器">
+<meta property="og:description" content="Sync.Pool 功能一句话来说，就是用来保存和复用临时对象，减少内存的分配，降低GC的压力 example123456789101112type Student struct&amp;#123;    Name string    Age int32    Remark [1024]byte&amp;#125;var buf,_ &#x3D; json.Marshal(Student&amp;#123;Name:&quot;G">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2023-10-30T16:00:32.000Z">
-<meta property="article:modified_time" content="2023-10-30T16:03:40.840Z">
+<meta property="og:image" content="http://example.com/2023/11/09/sync-Pool%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/pool.jpg">
+<meta property="article:published_time" content="2023-11-09T10:08:14.000Z">
+<meta property="article:modified_time" content="2023-11-09T12:44:17.657Z">
 <meta property="article:author" content="Malyue">
-<meta property="article:tag" content="八股">
-<meta property="article:tag" content="C++">
+<meta property="article:tag" content="golang">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2023/11/09/sync-Pool%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/pool.jpg">
   
   
   
-  <title>C++学习 - Malyue&#39;s Blog</title>
+  <title>sync.Pool源码解析 - Malyue&#39;s Blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -239,7 +240,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="C++学习"></span>
+            <span id="subtitle" data-typed-text="sync.Pool源码解析"></span>
           
         </div>
 
@@ -250,8 +251,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-10-31 00:00" pubdate>
-          2023年10月31日 凌晨
+        <time datetime="2023-11-09 18:08" pubdate>
+          2023年11月9日 晚上
         </time>
       </span>
     
@@ -262,7 +263,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          154 字
+          654 字
         
       </span>
     
@@ -273,7 +274,7 @@
         
         
         
-          2 分钟
+          6 分钟
         
       </span>
     
@@ -318,14 +319,22 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">C++学习</h1>
+            <h1 id="seo-header">sync.Pool源码解析</h1>
             
             
               <div class="markdown-body">
                 
-                <h3 id="C-虚函数"><a href="#C-虚函数" class="headerlink" title="C++虚函数"></a>C++虚函数</h3><p>C++虚函数的作用是实现动态多态，即让基类的指针或者引用能够根据实际指向的对象类型来调用相应的成员函数，虚函数可以在子类中被覆盖(重写)，从而实现多态。纯虚函数是一种特殊的虚函数，没有函数体，只有声明，并且要求子类必须重写它。</p>
-<p>含有纯虚函数的类叫做抽象类，它不能创建对象。</p>
-<h2 id="红黑树和AVL树"><a href="#红黑树和AVL树" class="headerlink" title="红黑树和AVL树"></a>红黑树和AVL树</h2><h3 id="STL容器"><a href="#STL容器" class="headerlink" title="STL容器"></a>STL容器</h3>
+                <h2 id="Sync-Pool-功能"><a href="#Sync-Pool-功能" class="headerlink" title="Sync.Pool 功能"></a>Sync.Pool 功能</h2><p>一句话来说，就是用来保存和复用临时对象，减少内存的分配，降低GC的压力</p>
+<h3 id="example"><a href="#example" class="headerlink" title="example"></a>example</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> Student <span class="hljs-keyword">struct</span>&#123;<br>    Name <span class="hljs-type">string</span><br>    Age <span class="hljs-type">int32</span><br>    Remark [<span class="hljs-number">1024</span>]<span class="hljs-type">byte</span><br>&#125;<br><br><span class="hljs-keyword">var</span> buf,_ = json.Marshal(Student&#123;Name:<span class="hljs-string">&quot;Geektutu&quot;</span>,Age:<span class="hljs-number">25</span>&#125;)<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">unmarsh</span><span class="hljs-params">()</span></span>&#123;<br>    stu := &amp;Student&#123;&#125;<br>    json.Unmarshal(buf,stu)<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>正常高并发情况下，短时间内可能需要创建大量的临时对象，而这些对象都是分配在堆上，会给GC造成很大压力，严重影响程序的性能</p>
+<p>所以可以使用<code>sync.Pool</code></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">var</span> studentPool = sync.Pool&#123;<br>    New: <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> <span class="hljs-keyword">interface</span>&#123;&#125; &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">new</span>(Student)<br>    &#125;,<br>&#125;<br><br><span class="hljs-comment">// 从对象池中获取对象，返回值是interface&#123;&#125;,需要类型转换</span><br>stu := studentPool.Get().(*Student)<br>json.Unmarshal(buf,stu)<br><span class="hljs-comment">// Put - 在对象使用完后返回对象池</span><br>studentPool.Put(stu)<br></code></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="https://juejin.cn/post/7237679967949520933">https://juejin.cn/post/7237679967949520933</a></p>
+<h2 id="Pool结构"><a href="#Pool结构" class="headerlink" title="Pool结构"></a>Pool结构</h2><img src="/2023/11/09/sync-Pool%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/pool.jpg" srcset="/img/loading.gif" lazyload class title="图片">
+
+
                 
               </div>
             
@@ -333,41 +342,11 @@
             <div>
               <div class="post-metas my-3">
   
-    <div class="post-meta mr-3 d-flex align-items-center">
-      <i class="iconfont icon-category"></i>
-      
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/C/" class="category-chain-item">C++</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/C/%E9%9D%A2%E8%AF%95/" class="category-chain-item">面试</a>
-  
-  
-
-  
-
-      </span>
-    
-  
-</span>
-
-    </div>
-  
   
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/%E5%85%AB%E8%82%A1/" class="print-no-link">#八股</a>
-      
-        <a href="/tags/C/" class="print-no-link">#C++</a>
+        <a href="/tags/golang/" class="print-no-link">#golang</a>
       
     </div>
   
@@ -379,8 +358,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>C++学习</div>
-      <div>http://example.com/2023/10/31/C-学习/</div>
+      <div>sync.Pool源码解析</div>
+      <div>http://example.com/2023/11/09/sync-Pool源码解析/</div>
     </div>
     <div class="license-meta">
       
@@ -392,7 +371,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2023年10月31日</div>
+          <div>2023年11月9日</div>
         </div>
       
       
@@ -424,9 +403,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/11/09/sync-Pool%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" title="sync.Pool源码解析">
+                      <a href="/2023/11/19/leetcode-443-%E5%8E%8B%E7%BC%A9%E5%AD%97%E7%AC%A6%E4%B8%B2/" title="leetcode-443-压缩字符串">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">sync.Pool源码解析</span>
+                        <span class="hidden-mobile">leetcode-443-压缩字符串</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -434,8 +413,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/10/25/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" title="操作系统">
-                        <span class="hidden-mobile">操作系统</span>
+                      <a href="/2023/10/31/C-%E5%AD%A6%E4%B9%A0/" title="C++学习">
+                        <span class="hidden-mobile">C++学习</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

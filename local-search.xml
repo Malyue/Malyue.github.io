@@ -4,6 +4,48 @@
   
   
   <entry>
+    <title>leetcode-443-压缩字符串</title>
+    <link href="/2023/11/19/leetcode-443-%E5%8E%8B%E7%BC%A9%E5%AD%97%E7%AC%A6%E4%B8%B2/"/>
+    <url>/2023/11/19/leetcode-443-%E5%8E%8B%E7%BC%A9%E5%AD%97%E7%AC%A6%E4%B8%B2/</url>
+    
+    <content type="html"><![CDATA[<h1 id="leetcode-443-压缩字符串"><a href="#leetcode-443-压缩字符串" class="headerlink" title="leetcode-443  压缩字符串"></a>leetcode-443  压缩字符串</h1><blockquote><p><a href="https://leetcode.cn/problems/string-compression/?envType=study-plan-v2&envId=leetcode-75">原链接 leetcode-433 mid</a></p></blockquote><p>这一题没什么太大的复杂地方，题意就是对字符串进行压缩，将型如<code>aabbccc</code>压缩为<code>a2b2c3</code>的形式</p><p>直接遍历一遍即可，双指针，left和right，left是一组单词的开始，而right往后遍历找到第一个非chars[left]的字母或者找到字符串结尾即结束，然后将left跳到right当前的位置即可，对不起它mid的难度，所以就不过多记录了。</p>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>算法</tag>
+      
+      <tag>leetcode</tag>
+      
+      <tag>每日一题</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>sync.Pool源码解析</title>
+    <link href="/2023/11/09/sync-Pool%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"/>
+    <url>/2023/11/09/sync-Pool%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/</url>
+    
+    <content type="html"><![CDATA[<h2 id="Sync-Pool-功能"><a href="#Sync-Pool-功能" class="headerlink" title="Sync.Pool 功能"></a>Sync.Pool 功能</h2><p>一句话来说，就是用来保存和复用临时对象，减少内存的分配，降低GC的压力</p><h3 id="example"><a href="#example" class="headerlink" title="example"></a>example</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> Student <span class="hljs-keyword">struct</span>&#123;<br>    Name <span class="hljs-type">string</span><br>    Age <span class="hljs-type">int32</span><br>    Remark [<span class="hljs-number">1024</span>]<span class="hljs-type">byte</span><br>&#125;<br><br><span class="hljs-keyword">var</span> buf,_ = json.Marshal(Student&#123;Name:<span class="hljs-string">&quot;Geektutu&quot;</span>,Age:<span class="hljs-number">25</span>&#125;)<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">unmarsh</span><span class="hljs-params">()</span></span>&#123;<br>    stu := &amp;Student&#123;&#125;<br>    json.Unmarshal(buf,stu)<br>&#125;<br></code></pre></td></tr></table></figure><p>正常高并发情况下，短时间内可能需要创建大量的临时对象，而这些对象都是分配在堆上，会给GC造成很大压力，严重影响程序的性能</p><p>所以可以使用<code>sync.Pool</code></p><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">var</span> studentPool = sync.Pool&#123;<br>    New: <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> <span class="hljs-keyword">interface</span>&#123;&#125; &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">new</span>(Student)<br>    &#125;,<br>&#125;<br><br><span class="hljs-comment">// 从对象池中获取对象，返回值是interface&#123;&#125;,需要类型转换</span><br>stu := studentPool.Get().(*Student)<br>json.Unmarshal(buf,stu)<br><span class="hljs-comment">// Put - 在对象使用完后返回对象池</span><br>studentPool.Put(stu)<br></code></pre></td></tr></table></figure><p><a href="https://juejin.cn/post/7237679967949520933">https://juejin.cn/post/7237679967949520933</a></p><h2 id="Pool结构"><a href="#Pool结构" class="headerlink" title="Pool结构"></a>Pool结构</h2><img src="/2023/11/09/sync-Pool%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/pool.jpg" class title="图片">]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>golang</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>C++学习</title>
     <link href="/2023/10/31/C-%E5%AD%A6%E4%B9%A0/"/>
     <url>/2023/10/31/C-%E5%AD%A6%E4%B9%A0/</url>
@@ -88,7 +130,7 @@
     <link href="/2023/10/25/mysql%E5%85%AB%E8%82%A1/"/>
     <url>/2023/10/25/mysql%E5%85%AB%E8%82%A1/</url>
     
-    <content type="html"><![CDATA[<h2 id="三大范式"><a href="#三大范式" class="headerlink" title="三大范式"></a>三大范式</h2><ul><li>第一范式：每个列不可再分</li><li>第二范式：在第一范式基础上，非主键都完全依赖于主键，而不是依赖于主键的一部分</li><li>第三范式：在第二范式的基础上，非主键只依赖于主键，不依赖于其他非主键</li></ul><h2 id="日志"><a href="#日志" class="headerlink" title="日志"></a>日志</h2><h3 id="WAL"><a href="#WAL" class="headerlink" title="WAL"></a>WAL</h3><p>WAL(write ahead log),即预写日志，在写操作执行前将其先用日志记录下来</p><p>这与redis的不同，redis的AOF操作是写后日志，而Mysql中则是使用了该方法</p><p>mysql中主要有四种日志，接下来逐一了解</p><h3 id="binlog"><a href="#binlog" class="headerlink" title="binlog"></a>binlog</h3><h3 id="redo-log"><a href="#redo-log" class="headerlink" title="redo log"></a>redo log</h3><p>redo log - 重做日志</p><p>在数据库中至关重要，确保了数据库的可靠性和持久性，是<code>事务处理</code>和<code>数据恢复</code>的关键组成</p><h3 id="undo-log"><a href="#undo-log" class="headerlink" title="undo log"></a>undo log</h3><p>undo log - 撤销日志</p><h3 id="relay-log"><a href="#relay-log" class="headerlink" title="relay log"></a>relay log</h3>]]></content>
+    <content type="html"><![CDATA[<h2 id="三大范式"><a href="#三大范式" class="headerlink" title="三大范式"></a>三大范式</h2><ul><li>第一范式：每个列不可再分</li><li>第二范式：在第一范式基础上，非主键都完全依赖于主键，而不是依赖于主键的一部分</li><li>第三范式：在第二范式的基础上，非主键只依赖于主键，不依赖于其他非主键</li></ul><h2 id="日志"><a href="#日志" class="headerlink" title="日志"></a>日志</h2><h3 id="WAL"><a href="#WAL" class="headerlink" title="WAL"></a>WAL</h3><p>WAL(write ahead log),即预写日志，在写入磁盘前先记录日志</p><p>虽然日志也要写入磁盘，但是日志是追加写，而磁盘是随机写，追加写会比随机写快</p><p>mysql中主要有四种日志，接下来逐一了解</p><h3 id="binlog"><a href="#binlog" class="headerlink" title="binlog"></a>binlog</h3><h3 id="redo-log"><a href="#redo-log" class="headerlink" title="redo log"></a>redo log</h3><p>redo log - 重做日志</p><p>在数据库中至关重要，确保了数据库的可靠性和持久性，是<code>事务处理</code>和<code>数据恢复</code>的关键组成</p><h3 id="undo-log"><a href="#undo-log" class="headerlink" title="undo log"></a>undo log</h3><p>undo log - 撤销日志</p><h3 id="relay-log"><a href="#relay-log" class="headerlink" title="relay log"></a>relay log</h3>]]></content>
     
     
     

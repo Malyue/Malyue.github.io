@@ -267,6 +267,90 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
+        <a href="/2023/11/19/leetcode-443-%E5%8E%8B%E7%BC%A9%E5%AD%97%E7%AC%A6%E4%B8%B2/" target="_self">
+          leetcode-443-压缩字符串
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2023/11/19/leetcode-443-%E5%8E%8B%E7%BC%A9%E5%AD%97%E7%AC%A6%E4%B8%B2/" target="_self">
+        <div>
+          leetcode-443  压缩字符串 原链接 leetcode-433 mid  这一题没什么太大的复杂地方，题意就是对字符串进行压缩，将型如aabbccc压缩为a2b2c3的形式 直接遍历一遍即可，双指针，left和right，left是一组单词的开始，而right往后遍历找到第一个非chars[left]的字母或者找到字符串结尾即结束，然后将left跳到right当前的位置即可，对不起它mi
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-11-19 13:02" pubdate>
+              2023-11-19
+            </time>
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E7%AE%97%E6%B3%95/">#算法</a>
+            
+              <a href="/tags/leetcode/">#leetcode</a>
+            
+              <a href="/tags/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98/">#每日一题</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2023/11/09/sync-Pool%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" target="_self">
+          sync.Pool源码解析
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2023/11/09/sync-Pool%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" target="_self">
+        <div>
+          Sync.Pool 功能一句话来说，就是用来保存和复用临时对象，减少内存的分配，降低GC的压力 example123456789101112type Student struct&#123;    Name string    Age int32    Remark [1024]byte&#125;var buf,_ = json.Marshal(Student&#123;Name:&quot;G
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-11-09 18:08" pubdate>
+              2023-11-09
+            </time>
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/golang/">#golang</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
         <a href="/2023/10/31/C-%E5%AD%A6%E4%B9%A0/" target="_self">
           C++学习
         </a>
@@ -472,7 +556,7 @@
       
       <a class="index-excerpt index-excerpt__noimg" href="/2023/10/25/mysql%E5%85%AB%E8%82%A1/" target="_self">
         <div>
-          三大范式 第一范式：每个列不可再分 第二范式：在第一范式基础上，非主键都完全依赖于主键，而不是依赖于主键的一部分 第三范式：在第二范式的基础上，非主键只依赖于主键，不依赖于其他非主键  日志WALWAL(write ahead log),即预写日志，在写操作执行前将其先用日志记录下来 这与redis的不同，redis的AOF操作是写后日志，而Mysql中则是使用了该方法 mysql中主要有四种日志
+          三大范式 第一范式：每个列不可再分 第二范式：在第一范式基础上，非主键都完全依赖于主键，而不是依赖于主键的一部分 第三范式：在第二范式的基础上，非主键只依赖于主键，不依赖于其他非主键  日志WALWAL(write ahead log),即预写日志，在写入磁盘前先记录日志 虽然日志也要写入磁盘，但是日志是追加写，而磁盘是随机写，追加写会比随机写快 mysql中主要有四种日志，接下来逐一了解 bin
         </div>
       </a>
 
