@@ -4,6 +4,27 @@
   
   
   <entry>
+    <title>容器基础</title>
+    <link href="/2023/11/19/%E5%AE%B9%E5%99%A8%E5%9F%BA%E7%A1%80/"/>
+    <url>/2023/11/19/%E5%AE%B9%E5%99%A8%E5%9F%BA%E7%A1%80/</url>
+    
+    <content type="html"><![CDATA[<h2 id="docker和虚拟机的区别"><a href="#docker和虚拟机的区别" class="headerlink" title="docker和虚拟机的区别"></a>docker和虚拟机的区别</h2><p>说到进程划分为空间，我们往往会想到docker，以及在此之前的虚拟机，首先了解一下两者有什么区别</p><img src="/2023/11/19/%E5%AE%B9%E5%99%A8%E5%9F%BA%E7%A1%80/%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%92%8Cdocker.png" class title="图片">docker<p>虚拟机是通过<code>Hypervisor</code>,虚拟化出了对应的硬件，CPU，内存等，并在之上去安装一个<code>guest os</code>,将程序跑在对应的os之上，这样就可以做到了隔离</p><p>而docker不一样，docker的隔离不是通过docker engine去做的，而是通过操作系统的<code>namespace</code>和<code>cgroup</code>做到的。</p><p>docker容器其实还是跑在宿主机上的一个进程，只不过通过<code>namespace</code>去进行隔离，使得容器进程只能看到自己，而不能看到宿主机的其他进程，而通过<code>cgroup</code>也做到了一些对应的内存，CPU的使用限制</p><p>这样的架构也正是Docker比虚拟机更受欢迎的原因，想使用虚拟化技术作为应用沙盒，就必须要由<code>Hypervisor</code>来负责创建虚拟机，这个虚拟机是真实存在的，且必须在虚拟机里面运行一个完整的<code>Guest OS</code>才能来执行用户的应用进程，这不可避免的带来了额外的资源消耗和应用</p><blockquote><p>根据实验，一个运行着的CentOS的KVM虚拟机启动后，在不做优化的情况下，虚拟机自己就需要占用100-200MB内存，此外，用户应用运行在虚拟机里面，它对宿主机操作系统的调用就不可避免地要经过虚拟化软件的拦截和处理，这本身又是一层性能损耗，尤其对计算资源、网络和磁盘IO损耗非常大</p></blockquote><p>相比执行，容器化后的用户应用，其实还是宿主机上的一个普通进程，所以并没有因为虚拟化带来的各种性能损耗，而另外一方面，使用Namespace作为隔离手段的容器并不需要单独的Guest OS，这就使得容器额外的资源占用几乎可以忽略不计</p><h2 id="Namespace"><a href="#Namespace" class="headerlink" title="Namespace"></a>Namespace</h2><p>前面提到了namespace，首先来了解一下这个机制，其实说来很简单，就是在创建一个新进程时，设定对应的namespace参数，这也会使得新创建的进程看到一个全新的空间，例如PID的namespace，正常在进程中执行ps，会看到宿主机的所有进程，而在加了参数后创建的进程中，它所看到的进程只有它自己，它会认为自己才是操作系统的一号进程，即容器中的一号进程，而看不到之前的进程了。</p><p>除了PID的namespace以外，操作系统还提供了<code>Mount</code>,<code>UTS</code>,<code>IPC</code>,<code>Network</code>,<code>User</code>等，用来对各种不同进程上下文进程“障眼法”操作</p><p>例如<code>Mount</code>，用于让被隔离进程只能看到当前Namespace里的挂载点信息</p><p>不过只有namespace的话，缺点也很明显，就是隔离的不够彻底，首先多个容器之间使用的还是同一个操作系统内核，比如在低版本linux宿主机上运行高版本的linux容器，是行不通的，而且还有很多资源和对象是不能被 Namespace 化的，例如时间，如果在容器中通过<code>settimeofday(2)</code>系统调用去修改了时间，整个宿主机1的时间也会随之修改</p>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>docker</tag>
+      
+      <tag>云原生</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>初识raft(1)</title>
     <link href="/2023/11/19/raft/"/>
     <url>/2023/11/19/raft/</url>
