@@ -24,7 +24,7 @@
 <meta property="og:description" content="golang的经典项目 - mit 6.824，最后的lab就是基于raft实现的一个kv数据库 那么什么是raft算法？首先要知道raft是一种分布式一致性共识算法，是一个非拜占庭的一致性算法（后面会介绍什么是拜占庭问题），简单来说，即raft认为所有通信是正确的而非伪造的，则在N个节点的情况下(N为奇数)，可以最多容忍(N-1)&#x2F;2(N-1)&#x2F;2个单点故障 分布式共识算法如">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-11-19T05:57:38.000Z">
-<meta property="article:modified_time" content="2023-11-19T07:05:57.225Z">
+<meta property="article:modified_time" content="2023-11-25T07:31:08.833Z">
 <meta property="article:author" content="Malyue">
 <meta property="article:tag" content="raft">
 <meta property="article:tag" content="分布式">
@@ -262,7 +262,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2.7k 字
+          2.4k 字
         
       </span>
     
@@ -273,7 +273,7 @@
         
         
         
-          23 分钟
+          20 分钟
         
       </span>
     
@@ -360,11 +360,6 @@
 <h4 id="A的问题"><a href="#A的问题" class="headerlink" title="A的问题"></a>A的问题</h4><p>想解决C的问题，其实用同步+串行化操作即可，只有确保将数据都同步完了，才给客户端响应，而这样无论客户端请求哪个节点，获得的数据都是一致性的</p>
 <p>但是这样就会导致客户端在写入时进入阻塞的时间变长，因为需要等待所有数据的同步，这种方法将多节点系统看成了一个整体，类似于单节点一般，写入时就确保了数据的一致性，但是也存在了其他的问题</p>
 <p>比如某个follower节点宕机了，这时由于数据没有所有节点都同步完成，则服务不会响应，那么对于客户端来说，这就是一个不可用的情况，而且过度的放大了故障，将单节点故障扩为了整体系统的故障</p>
-<h3 id="分布式一致性共识算法"><a href="#分布式一致性共识算法" class="headerlink" title="分布式一致性共识算法"></a>分布式一致性共识算法</h3><p>前面讲了CAP的问题，但是实际的系统设计并非非黑即白，C和A并非是绝对的对立，存在一个互相协调的存在</p>
-<p>分布式共识算法，就是做的一个找到了一定取舍的一个设计</p>
-<p>分布式一致性共识算法，指的是在分布式系统种，使得所有节点对同一份数据的认知能够达成共识的算法，它主要强调的是一致性问题，但是通过对应的算法机制，在尽可能少的牺牲C的基础上，去提高了A的水平</p>
-<p>而raft则是一种一致性共识算法，在可用性A上，raft能保证当前分布式系统中<code>存在半数以上节点存活时，系统是稳定可用的</code>,同时请求耗时取决于多数派的下限，而非所有节点的下限，一定程度上避免了木桶短板效应</p>
-<p>而在C上，raft算法能够保证数据满足最终一致性，而且在工程化的落地上，经常也会被修改而去保证可以保证数据的强一致性</p>
 
                 
               </div>
@@ -372,6 +367,34 @@
             <hr/>
             <div>
               <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E9%9D%A2%E8%AF%95/" class="category-chain-item">面试</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E9%9D%A2%E8%AF%95/%E5%88%86%E5%B8%83%E5%BC%8F/" class="category-chain-item">分布式</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
   
   
     <div class="post-meta">

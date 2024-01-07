@@ -16,24 +16,23 @@
   <meta name="author" content="Malyue">
   <meta name="keywords" content="">
   
-    <meta name="description" content="Sync.Pool 功能一句话来说，就是用来保存和复用临时对象，减少内存的分配，降低GC的压力 example123456789101112type Student struct&amp;#123;    Name string    Age int32    Remark [1024]byte&amp;#125;var buf,_ &#x3D; json.Marshal(Student&amp;#123;Name:&quot;G">
+    <meta name="description" content="什么是Contextcontext是golang中的一个经典工具，他不是一种数据结构，其实底层是一个interface,主要是在异步场景中用于实现并发协调以及对goroutine的生命周期控制，除此之外，还可以用来在同一个goroutine 中存储数据，在这里简单来了解一下context的一个实现。 context.Context首先要了解一下他的结构，前面说了Context其实是一个interf">
 <meta property="og:type" content="article">
-<meta property="og:title" content="sync.Pool源码解析">
-<meta property="og:url" content="http://example.com/2023/11/09/sync-Pool%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/index.html">
+<meta property="og:title" content="golang context解析">
+<meta property="og:url" content="http://example.com/2023/12/02/golang-context%E8%A7%A3%E6%9E%90/index.html">
 <meta property="og:site_name" content="Malyue&#39;s Blog">
-<meta property="og:description" content="Sync.Pool 功能一句话来说，就是用来保存和复用临时对象，减少内存的分配，降低GC的压力 example123456789101112type Student struct&amp;#123;    Name string    Age int32    Remark [1024]byte&amp;#125;var buf,_ &#x3D; json.Marshal(Student&amp;#123;Name:&quot;G">
+<meta property="og:description" content="什么是Contextcontext是golang中的一个经典工具，他不是一种数据结构，其实底层是一个interface,主要是在异步场景中用于实现并发协调以及对goroutine的生命周期控制，除此之外，还可以用来在同一个goroutine 中存储数据，在这里简单来了解一下context的一个实现。 context.Context首先要了解一下他的结构，前面说了Context其实是一个interf">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/2023/11/09/sync-Pool%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/pool.jpg">
-<meta property="article:published_time" content="2023-11-09T10:08:14.000Z">
-<meta property="article:modified_time" content="2023-11-19T16:29:33.441Z">
+<meta property="article:published_time" content="2023-12-02T13:52:21.000Z">
+<meta property="article:modified_time" content="2023-12-02T14:16:09.335Z">
 <meta property="article:author" content="Malyue">
-<meta property="article:tag" content="golang">
+<meta property="article:tag" content="go">
+<meta property="article:tag" content="面试">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/2023/11/09/sync-Pool%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/pool.jpg">
   
   
   
-  <title>sync.Pool源码解析 - Malyue&#39;s Blog</title>
+  <title>golang context解析 - Malyue&#39;s Blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -240,7 +239,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="sync.Pool源码解析"></span>
+            <span id="subtitle" data-typed-text="golang context解析"></span>
           
         </div>
 
@@ -251,8 +250,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-11-09 18:08" pubdate>
-          2023年11月9日 晚上
+        <time datetime="2023-12-02 21:52" pubdate>
+          2023年12月2日 晚上
         </time>
       </span>
     
@@ -263,7 +262,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          654 字
+          1.9k 字
         
       </span>
     
@@ -274,7 +273,7 @@
         
         
         
-          6 分钟
+          16 分钟
         
       </span>
     
@@ -319,21 +318,27 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">sync.Pool源码解析</h1>
+            <h1 id="seo-header">golang context解析</h1>
             
             
               <div class="markdown-body">
                 
-                <h2 id="Sync-Pool-功能"><a href="#Sync-Pool-功能" class="headerlink" title="Sync.Pool 功能"></a>Sync.Pool 功能</h2><p>一句话来说，就是用来保存和复用临时对象，减少内存的分配，降低GC的压力</p>
-<h3 id="example"><a href="#example" class="headerlink" title="example"></a>example</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> Student <span class="hljs-keyword">struct</span>&#123;<br>    Name <span class="hljs-type">string</span><br>    Age <span class="hljs-type">int32</span><br>    Remark [<span class="hljs-number">1024</span>]<span class="hljs-type">byte</span><br>&#125;<br><br><span class="hljs-keyword">var</span> buf,_ = json.Marshal(Student&#123;Name:<span class="hljs-string">&quot;Geektutu&quot;</span>,Age:<span class="hljs-number">25</span>&#125;)<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">unmarsh</span><span class="hljs-params">()</span></span>&#123;<br>    stu := &amp;Student&#123;&#125;<br>    json.Unmarshal(buf,stu)<br>&#125;<br></code></pre></td></tr></table></figure>
+                <h2 id="什么是Context"><a href="#什么是Context" class="headerlink" title="什么是Context"></a>什么是Context</h2><p><code>context</code>是golang中的一个经典工具，他不是一种数据结构，其实底层是一个<code>interface</code>,主要是在异步场景中用于实现并发协调以及对<code>goroutine</code>的生命周期控制，除此之外，还可以用来在同一个<code>goroutine</code> 中存储数据，在这里简单来了解一下<code>context</code>的一个实现。</p>
+<h2 id="context-Context"><a href="#context-Context" class="headerlink" title="context.Context"></a>context.Context</h2><p>首先要了解一下他的结构，前面说了<code>Context</code>其实是一个interface类型</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> Context <span class="hljs-keyword">interface</span>&#123;<br>    Deadline() (time.Time,<span class="hljs-type">bool</span>) <span class="hljs-comment">// 返回ctx的过期时间</span><br>    Done() &lt;- <span class="hljs-keyword">chan</span> <span class="hljs-keyword">struct</span>&#123;&#125; <span class="hljs-comment">// 返回一个用来标识ctx是否结束的chan</span><br>    Err() <span class="hljs-type">error</span> <span class="hljs-comment">// 返回ctx的错误</span><br>    Value(key any) any <span class="hljs-comment">// 返回ctx存放的对应key和value</span><br>&#125;<br></code></pre></td></tr></table></figure>
 
-<p>正常高并发情况下，短时间内可能需要创建大量的临时对象，而这些对象都是分配在堆上，会给GC造成很大压力，严重影响程序的性能</p>
-<p>所以可以使用<code>sync.Pool</code></p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">var</span> studentPool = sync.Pool&#123;<br>    New: <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> <span class="hljs-keyword">interface</span>&#123;&#125; &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">new</span>(Student)<br>    &#125;,<br>&#125;<br><br><span class="hljs-comment">// 从对象池中获取对象，返回值是interface&#123;&#125;,需要类型转换</span><br>stu := studentPool.Get().(*Student)<br>json.Unmarshal(buf,stu)<br><span class="hljs-comment">// Put - 在对象使用完后返回对象池</span><br>studentPool.Put(stu)<br></code></pre></td></tr></table></figure>
+<p>除此之外，还定义了一些标准的错误类型</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">var</span> Canceled = errors.New(<span class="hljs-string">&quot;context canceled&quot;</span>) <span class="hljs-comment">// ctx 被取消了</span><br><br><span class="hljs-keyword">var</span> DeadlineExceeded <span class="hljs-type">error</span> = deadlineExceededError&#123;&#125; <span class="hljs-comment">// ctx 过期</span><br><br><span class="hljs-keyword">type</span> deadlineExceededError <span class="hljs-keyword">struct</span>&#123;&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(deadlineExceededError)</span></span> Error() <span class="hljs-type">string</span>   &#123; <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;context deadline exceeded&quot;</span> &#125;<br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(deadlineExceededError)</span></span> Timeout() <span class="hljs-type">bool</span>   &#123; <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> &#125;<br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(deadlineExceededError)</span></span> Temporary() <span class="hljs-type">bool</span> &#123; <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span><br></code></pre></td></tr></table></figure>
 
-<p><a target="_blank" rel="noopener" href="https://juejin.cn/post/7237679967949520933">https://juejin.cn/post/7237679967949520933</a></p>
-<h2 id="Pool结构"><a href="#Pool结构" class="headerlink" title="Pool结构"></a>Pool结构</h2><img src="/2023/11/09/sync-Pool%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/pool.jpg" srcset="/img/loading.gif" lazyload class title="图片">
+<h2 id="emptyCtx"><a href="#emptyCtx" class="headerlink" title="emptyCtx"></a>emptyCtx</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> emptyCtx <span class="hljs-type">int</span> <span class="hljs-comment">// 一个空的context，本质是一个整型</span><br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(*emptyCtx)</span></span> Deadline() (deadline time.Time,ok <span class="hljs-type">bool</span>) &#123; <span class="hljs-keyword">return</span> &#125; <span class="hljs-comment">// 返回一个公元元年时间以及false的flag，标识当前 context 不存在过期时间</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(*emptyCtx)</span></span> Done() &lt;- <span class="hljs-keyword">chan</span> <span class="hljs-keyword">struct</span>&#123;&#125; &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span><br>&#125; <span class="hljs-comment">// 返回一个 nil 值，用户无论往nil中写入或者读取数据，都会阻塞</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(*emptyCtx)</span></span> Err() <span class="hljs-type">error</span> &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span><br>&#125; <span class="hljs-comment">// 返回值永远为 nil</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(*emptyCtx)</span></span> Value(key any) any &#123;<br>    <span class="hljs-keyword">return</span><br>&#125; <span class="hljs-comment">// 返回值同样为 nil</span><br></code></pre></td></tr></table></figure>
 
+<p><code>emptyCtx</code> 其实就是对 <code>Context</code> 的一个实现，而用过<code>context</code>包的应该都知道<code>context.Background()</code> 和 <code>context.TODO()</code></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">var</span> (<br>    background = <span class="hljs-built_in">new</span>(emptyCtx)<br>    todo = <span class="hljs-built_in">new</span>(emptyCtx)<br>)<br></code></pre></td></tr></table></figure>
+
+<p>两者的本质是一样的，但是在使用上其实是有一定规范，<code>background</code> 通常是由主函数，初始化和测试使用，并作为传入请求的顶级上下文，而<code>TODO</code>就是当不知道要使用哪个<code>Context</code>时使用的，后续需要将其替换掉，其实就是语义的区别</p>
+<h2 id="cancelCtx"><a href="#cancelCtx" class="headerlink" title="cancelCtx"></a>cancelCtx</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> cancelCtx <span class="hljs-keyword">struct</span> &#123;<br>    Context<br>   <br>    mu       sync.Mutex            <span class="hljs-comment">// protects following fields</span><br>    done     atomic.Value          <span class="hljs-comment">// of chan struct&#123;&#125;, created lazily, closed by first cancel call</span><br>    children <span class="hljs-keyword">map</span>[canceler]<span class="hljs-keyword">struct</span>&#123;&#125; <span class="hljs-comment">// set to nil by the first cancel call</span><br>    err      <span class="hljs-type">error</span>                 <span class="hljs-comment">// set to non-nil by the first cancel call</span><br>&#125;<br><br><span class="hljs-keyword">type</span> canceler <span class="hljs-keyword">interface</span> &#123;<br>    cancel(removeFromParent <span class="hljs-type">bool</span>, err <span class="hljs-type">error</span>)<br>    Done() &lt;-<span class="hljs-keyword">chan</span> <span class="hljs-keyword">struct</span>&#123;&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>可以看到cancelCtx其实是有一个Context作为其父context的，而还有一个children来指向<code>cancelCtx</code>的所有子context</p>
 
                 
               </div>
@@ -346,7 +351,9 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/golang/" class="print-no-link">#golang</a>
+        <a href="/tags/go/" class="print-no-link">#go</a>
+      
+        <a href="/tags/%E9%9D%A2%E8%AF%95/" class="print-no-link">#面试</a>
       
     </div>
   
@@ -358,8 +365,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>sync.Pool源码解析</div>
-      <div>http://example.com/2023/11/09/sync-Pool源码解析/</div>
+      <div>golang context解析</div>
+      <div>http://example.com/2023/12/02/golang-context解析/</div>
     </div>
     <div class="license-meta">
       
@@ -371,7 +378,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2023年11月9日</div>
+          <div>2023年12月2日</div>
         </div>
       
       
@@ -403,9 +410,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/11/19/leetcode-443-%E5%8E%8B%E7%BC%A9%E5%AD%97%E7%AC%A6%E4%B8%B2/" title="leetcode-443 压缩字符串">
+                      <a href="/2024/01/07/redis%E5%A4%A7Key%E9%97%AE%E9%A2%98/" title="redis大Key问题">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">leetcode-443 压缩字符串</span>
+                        <span class="hidden-mobile">redis大Key问题</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -413,8 +420,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/10/31/C-%E5%AD%A6%E4%B9%A0/" title="C++学习">
-                        <span class="hidden-mobile">C++学习</span>
+                      <a href="/2023/11/27/%E5%89%8D%E7%AB%AF%E6%90%AD%E5%BB%BA/" title="前端搭建">
+                        <span class="hidden-mobile">前端搭建</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

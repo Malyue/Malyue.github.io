@@ -16,24 +16,23 @@
   <meta name="author" content="Malyue">
   <meta name="keywords" content="">
   
-    <meta name="description" content="Sync.Pool 功能一句话来说，就是用来保存和复用临时对象，减少内存的分配，降低GC的压力 example123456789101112type Student struct&amp;#123;    Name string    Age int32    Remark [1024]byte&amp;#125;var buf,_ &#x3D; json.Marshal(Student&amp;#123;Name:&quot;G">
+    <meta name="description" content="最近打算开始写毕设的选题，因为好久没碰过前端开发了，这里来简单记录一下从头开始搭建的过程吧 使用vite搭建进入项目文件夹，执行以下语句 npm create vite@latest Aurora-ui 后面就是选择对应的框架以及语言了，这里选择了vue和js（因为前面用ts然后被各种检查折磨了一会，因为不太熟悉，所以还是选用js，避免在此耗较多时间） 之后根据提示，进入目录，安装依赖(npm i">
 <meta property="og:type" content="article">
-<meta property="og:title" content="sync.Pool源码解析">
-<meta property="og:url" content="http://example.com/2023/11/09/sync-Pool%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/index.html">
+<meta property="og:title" content="前端搭建">
+<meta property="og:url" content="http://example.com/2023/11/27/%E5%89%8D%E7%AB%AF%E6%90%AD%E5%BB%BA/index.html">
 <meta property="og:site_name" content="Malyue&#39;s Blog">
-<meta property="og:description" content="Sync.Pool 功能一句话来说，就是用来保存和复用临时对象，减少内存的分配，降低GC的压力 example123456789101112type Student struct&amp;#123;    Name string    Age int32    Remark [1024]byte&amp;#125;var buf,_ &#x3D; json.Marshal(Student&amp;#123;Name:&quot;G">
+<meta property="og:description" content="最近打算开始写毕设的选题，因为好久没碰过前端开发了，这里来简单记录一下从头开始搭建的过程吧 使用vite搭建进入项目文件夹，执行以下语句 npm create vite@latest Aurora-ui 后面就是选择对应的框架以及语言了，这里选择了vue和js（因为前面用ts然后被各种检查折磨了一会，因为不太熟悉，所以还是选用js，避免在此耗较多时间） 之后根据提示，进入目录，安装依赖(npm i">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/2023/11/09/sync-Pool%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/pool.jpg">
-<meta property="article:published_time" content="2023-11-09T10:08:14.000Z">
-<meta property="article:modified_time" content="2023-11-19T16:29:33.441Z">
+<meta property="article:published_time" content="2023-11-27T12:46:16.000Z">
+<meta property="article:modified_time" content="2023-11-27T13:23:37.425Z">
 <meta property="article:author" content="Malyue">
-<meta property="article:tag" content="golang">
+<meta property="article:tag" content="前端">
+<meta property="article:tag" content="毕设">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/2023/11/09/sync-Pool%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/pool.jpg">
   
   
   
-  <title>sync.Pool源码解析 - Malyue&#39;s Blog</title>
+  <title>前端搭建 - Malyue&#39;s Blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -240,7 +239,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="sync.Pool源码解析"></span>
+            <span id="subtitle" data-typed-text="前端搭建"></span>
           
         </div>
 
@@ -251,8 +250,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-11-09 18:08" pubdate>
-          2023年11月9日 晚上
+        <time datetime="2023-11-27 20:46" pubdate>
+          2023年11月27日 晚上
         </time>
       </span>
     
@@ -263,7 +262,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          654 字
+          2.9k 字
         
       </span>
     
@@ -274,7 +273,7 @@
         
         
         
-          6 分钟
+          24 分钟
         
       </span>
     
@@ -319,21 +318,46 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">sync.Pool源码解析</h1>
+            <h1 id="seo-header">前端搭建</h1>
             
             
               <div class="markdown-body">
                 
-                <h2 id="Sync-Pool-功能"><a href="#Sync-Pool-功能" class="headerlink" title="Sync.Pool 功能"></a>Sync.Pool 功能</h2><p>一句话来说，就是用来保存和复用临时对象，减少内存的分配，降低GC的压力</p>
-<h3 id="example"><a href="#example" class="headerlink" title="example"></a>example</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> Student <span class="hljs-keyword">struct</span>&#123;<br>    Name <span class="hljs-type">string</span><br>    Age <span class="hljs-type">int32</span><br>    Remark [<span class="hljs-number">1024</span>]<span class="hljs-type">byte</span><br>&#125;<br><br><span class="hljs-keyword">var</span> buf,_ = json.Marshal(Student&#123;Name:<span class="hljs-string">&quot;Geektutu&quot;</span>,Age:<span class="hljs-number">25</span>&#125;)<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">unmarsh</span><span class="hljs-params">()</span></span>&#123;<br>    stu := &amp;Student&#123;&#125;<br>    json.Unmarshal(buf,stu)<br>&#125;<br></code></pre></td></tr></table></figure>
+                <p>最近打算开始写毕设的选题，因为好久没碰过前端开发了，这里来简单记录一下从头开始搭建的过程吧</p>
+<h2 id="使用vite搭建"><a href="#使用vite搭建" class="headerlink" title="使用vite搭建"></a>使用vite搭建</h2><p>进入项目文件夹，执行以下语句</p>
+<p><code>npm create vite@latest Aurora-ui</code></p>
+<p>后面就是选择对应的框架以及语言了，这里选择了<code>vue</code>和<code>js</code>（因为前面用ts然后被各种检查折磨了一会，因为不太熟悉，所以还是选用js，避免在此耗较多时间）</p>
+<p>之后根据提示，进入目录，安装依赖(<code>npm install</code>),然后正常启动项目(<code>npm run dev</code>)就可以了</p>
+<h2 id="配置项目"><a href="#配置项目" class="headerlink" title="配置项目"></a>配置项目</h2><h3 id="配置vite-config"><a href="#配置vite-config" class="headerlink" title="配置vite.config"></a>配置vite.config</h3><p>我们经常看到 import 的时候路径是<code>@/xxx</code>,而自己使用时却查不到路径，这是因为没有在<code>vite.config.js</code>里面配置</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123; defineConfig &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;vite&#x27;</span><br><span class="hljs-keyword">import</span> &#123; resolve &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;path&#x27;</span><br><span class="hljs-keyword">import</span> vue <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;@vitejs/plugin-vue&#x27;</span><br><br><span class="hljs-comment">// https://vitejs.dev/config/</span><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-title function_">defineConfig</span>(&#123;<br>  <span class="hljs-attr">base</span>: <span class="hljs-string">&#x27;./&#x27;</span>,<br>  <span class="hljs-attr">plugins</span>: [<span class="hljs-title function_">vue</span>()],<br>  <span class="hljs-comment">// 配置别名</span><br>  <span class="hljs-attr">resolve</span>:&#123;<br>    <span class="hljs-attr">alias</span>:&#123;<br>      <span class="hljs-string">&#x27;@&#x27;</span>:<span class="hljs-title function_">resolve</span>(__dirname,<span class="hljs-string">&#x27;./src&#x27;</span>),<br>    &#125;,<br>  &#125;<br>&#125;)<br></code></pre></td></tr></table></figure>
 
-<p>正常高并发情况下，短时间内可能需要创建大量的临时对象，而这些对象都是分配在堆上，会给GC造成很大压力，严重影响程序的性能</p>
-<p>所以可以使用<code>sync.Pool</code></p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">var</span> studentPool = sync.Pool&#123;<br>    New: <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> <span class="hljs-keyword">interface</span>&#123;&#125; &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">new</span>(Student)<br>    &#125;,<br>&#125;<br><br><span class="hljs-comment">// 从对象池中获取对象，返回值是interface&#123;&#125;,需要类型转换</span><br>stu := studentPool.Get().(*Student)<br>json.Unmarshal(buf,stu)<br><span class="hljs-comment">// Put - 在对象使用完后返回对象池</span><br>studentPool.Put(stu)<br></code></pre></td></tr></table></figure>
+<p>除了这个以外，我们还要配置一下server相关的内容，包括端口号，http是否启动等，这个根据项目需求配置</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123; defineConfig &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;vite&#x27;</span><br><span class="hljs-keyword">import</span> &#123; resolve &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;path&#x27;</span><br><span class="hljs-keyword">import</span> vue <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;@vitejs/plugin-vue&#x27;</span><br><br><span class="hljs-comment">// https://vitejs.dev/config/</span><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-title function_">defineConfig</span>(&#123;<br>  <span class="hljs-attr">base</span>: <span class="hljs-string">&#x27;./&#x27;</span>,<br>  <span class="hljs-attr">plugins</span>: [<span class="hljs-title function_">vue</span>()],<br>  <span class="hljs-attr">resolve</span>:&#123;<br>    <span class="hljs-attr">alias</span>:&#123;<br>      <span class="hljs-string">&#x27;@&#x27;</span>:<span class="hljs-title function_">resolve</span>(__dirname,<span class="hljs-string">&#x27;./src&#x27;</span>),<br>    &#125;,<br>  &#125;,<br>  <span class="hljs-attr">server</span>:&#123;<br>    <span class="hljs-comment">// 是否开启https</span><br>    <span class="hljs-attr">https</span>: <span class="hljs-literal">false</span>,<br>    <span class="hljs-comment">// 端口号</span><br>    <span class="hljs-attr">port</span>: <span class="hljs-number">3000</span>,<br>    <span class="hljs-comment">// 监听所有地址</span><br>    <span class="hljs-attr">host</span>: <span class="hljs-string">&#x27;0.0.0.0&#x27;</span>,<br>    <span class="hljs-comment">// 服务启动时是否自动打开浏览器</span><br>    <span class="hljs-attr">open</span>: <span class="hljs-literal">false</span>,<br>    <span class="hljs-comment">// 允许跨域</span><br>    <span class="hljs-attr">cors</span>: <span class="hljs-literal">true</span>,<br>    <span class="hljs-comment">// 自定义代理规则</span><br>    <span class="hljs-attr">proxy</span>: &#123;&#125;,<br>  &#125;,<br><br>  <span class="hljs-comment">// 打包相关配置</span><br>  <span class="hljs-attr">build</span>:&#123;<br>    <span class="hljs-comment">// 设置最终构建的浏览器兼容目标</span><br>    <span class="hljs-attr">target</span>: <span class="hljs-string">&#x27;es2015&#x27;</span>,<br>    <span class="hljs-comment">// 构建后是否生成 source map文件</span><br>    <span class="hljs-attr">sourcemap</span>: <span class="hljs-literal">false</span>,<br>    <span class="hljs-comment">// chunk 大小警告的限制(以 kbs 为单位)</span><br>    <span class="hljs-attr">chunkSizeWarningLimit</span>: <span class="hljs-number">2000</span>,<br>    <span class="hljs-comment">// 启用/禁用 gzip 压缩大小报告</span><br>    <span class="hljs-attr">reportCompressedSize</span>: <span class="hljs-literal">false</span><br>  &#125;<br>&#125;)<br></code></pre></td></tr></table></figure>
 
-<p><a target="_blank" rel="noopener" href="https://juejin.cn/post/7237679967949520933">https://juejin.cn/post/7237679967949520933</a></p>
-<h2 id="Pool结构"><a href="#Pool结构" class="headerlink" title="Pool结构"></a>Pool结构</h2><img src="/2023/11/09/sync-Pool%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/pool.jpg" srcset="/img/loading.gif" lazyload class title="图片">
+<h3 id="目录结构"><a href="#目录结构" class="headerlink" title="目录结构"></a>目录结构</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs js">|-- dist/<br>|-- src/<br>    |-- api/ 接口列表<br>    |-- assets/ 静态资源<br>    |-- components/ 公共组件<br>    |-- constant/ 常量<br>    |-- router/ 路由<br>    |-- store/ 状态管理<br>    |-- types/ 类型<br>    |-- utils/ 工具集<br>    |-- views/ 页面组件<br></code></pre></td></tr></table></figure>
 
+
+
+<h3 id="集合路由"><a href="#集合路由" class="headerlink" title="集合路由"></a>集合路由</h3><p>执行命令下载对应依赖</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs npm">yarn add vue-router@4   <br></code></pre></td></tr></table></figure>
+
+<p>然后开始在<code>src/router</code>下新建<code>index.js</code>文件</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123; createRouter, createWebHistory &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;vue-router&#x27;</span>;<br><span class="hljs-keyword">import</span> baseRouters <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./modules/base&#x27;</span>;<br><span class="hljs-keyword">import</span> &#123; rollupVersion &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;vite&#x27;</span>;<br><span class="hljs-comment">// import base from &#x27;./modules/base/base&#x27;;</span><br><br><span class="hljs-keyword">const</span> routes = [...baseRouters];<br><br><span class="hljs-keyword">const</span> router = <span class="hljs-title function_">createRouter</span>(&#123;<br>    <span class="hljs-attr">history</span>:<span class="hljs-title function_">createWebHistory</span>(<span class="hljs-keyword">import</span>.<span class="hljs-property">meta</span>.<span class="hljs-property">env</span>.<span class="hljs-property">BASE_URL</span>),<br>    routes,<br>    <span class="hljs-title function_">scrollBehavior</span>(<span class="hljs-params"></span>)&#123;<br>        <span class="hljs-keyword">return</span>&#123;<br>            <span class="hljs-attr">el</span>: <span class="hljs-string">&#x27;#app&#x27;</span>,<br>            <span class="hljs-attr">top</span>: <span class="hljs-number">0</span>,<br>            <span class="hljs-attr">behavior</span>: <span class="hljs-string">&#x27;smooth&#x27;</span>,<br>        &#125;;<br>    &#125;,<br>&#125;);<br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> router;<br><br></code></pre></td></tr></table></figure>
+
+<p>接下来挂载路由配置</p>
+<p>在<code>main.js</code>中去添加</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123; createApp &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;vue&#x27;</span><br><span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;./style.css&#x27;</span><br><span class="hljs-keyword">import</span> <span class="hljs-title class_">App</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./App.vue&#x27;</span><br><span class="hljs-keyword">import</span> router <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;@/router&#x27;</span><br><br><span class="hljs-title function_">createApp</span>(<span class="hljs-title class_">App</span>).<span class="hljs-title function_">use</span>(router).<span class="hljs-title function_">mount</span>(<span class="hljs-string">&#x27;#app&#x27;</span>);<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="集成Pinia全局状态管理工具"><a href="#集成Pinia全局状态管理工具" class="headerlink" title="集成Pinia全局状态管理工具"></a>集成Pinia全局状态管理工具</h3><p><code>yarn add pinia</code></p>
+<p>目录结构同<code>router</code>,在modules下添加一个例子</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123; defineStore &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;pinia&#x27;</span>;<br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> userStore = <span class="hljs-title function_">defineStore</span>(<span class="hljs-string">&#x27;counter&#x27;</span>,&#123;<br>    <span class="hljs-attr">state</span>: <span class="hljs-function">()=&gt;</span> (&#123;<br>        <span class="hljs-attr">count</span>: <span class="hljs-number">1</span>,<br>    &#125;),<br>    <span class="hljs-attr">actions</span>: &#123;<br>        <span class="hljs-title function_">accumulate</span>(<span class="hljs-params"></span>) &#123;<br>            <span class="hljs-variable language_">this</span>.<span class="hljs-property">count</span>++<br>        &#125;,<br>    &#125;,<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<p>然后在<code>index.js</code>中export出去</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123; createPinia &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;pinia&#x27;</span>;<br><br><span class="hljs-keyword">const</span> store = <span class="hljs-title function_">createPinia</span>();<br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> store;<br><br><span class="hljs-keyword">export</span> * <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./module/auth&#x27;</span>;<br></code></pre></td></tr></table></figure>
+
+<p>最后在<code>main.js</code>中挂载</p>
 
                 
               </div>
@@ -346,7 +370,9 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/golang/" class="print-no-link">#golang</a>
+        <a href="/tags/%E5%89%8D%E7%AB%AF/" class="print-no-link">#前端</a>
+      
+        <a href="/tags/%E6%AF%95%E8%AE%BE/" class="print-no-link">#毕设</a>
       
     </div>
   
@@ -358,8 +384,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>sync.Pool源码解析</div>
-      <div>http://example.com/2023/11/09/sync-Pool源码解析/</div>
+      <div>前端搭建</div>
+      <div>http://example.com/2023/11/27/前端搭建/</div>
     </div>
     <div class="license-meta">
       
@@ -371,7 +397,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2023年11月9日</div>
+          <div>2023年11月27日</div>
         </div>
       
       
@@ -403,9 +429,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/11/19/leetcode-443-%E5%8E%8B%E7%BC%A9%E5%AD%97%E7%AC%A6%E4%B8%B2/" title="leetcode-443 压缩字符串">
+                      <a href="/2023/12/02/golang-context%E8%A7%A3%E6%9E%90/" title="golang context解析">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">leetcode-443 压缩字符串</span>
+                        <span class="hidden-mobile">golang context解析</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -413,8 +439,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/10/31/C-%E5%AD%A6%E4%B9%A0/" title="C++学习">
-                        <span class="hidden-mobile">C++学习</span>
+                      <a href="/2023/11/25/raft2/" title="初识raft（2）">
+                        <span class="hidden-mobile">初识raft（2）</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
