@@ -16,23 +16,24 @@
   <meta name="author" content="Malyue">
   <meta name="keywords" content="">
   
-    <meta name="description" content="什么是Redis大Key这里的大key其实指的是某个key所指向的value所占的内存空间较大，从而导致redis的性能下降、内存不足、数据不均衡以及主从同步延迟等问题。 多大的内存才算大key？其实这没有固定的标准，这取决于系统的需求，例如在高并发且低延迟的系统中，可能几kb就构成了大key，影响了redis的性能，而在其他场景下，可能几kb的内存没有什么影响，所以需要根据业务需求和性能指标来确">
+    <meta name="description" content="leetcode-447 回旋镖的数量 原链接 leetcode-447-mid  给定平面上 n 对 互不相同 的点 points ，其中 points[i] &#x3D; [xi, yi] 。回旋镖 是由点 (i, j, k) 表示的元组 ，其中 i 和 j 之间的距离和 i 和 k 之间的欧式距离相等（需要考虑元组的顺序）。 返回平面上所有回旋镖的数量。 解题：这题没想到什么比较特别的算法，首先想到的">
 <meta property="og:type" content="article">
-<meta property="og:title" content="redis大Key问题">
-<meta property="og:url" content="http://example.com/2024/01/07/redis%E5%A4%A7Key%E9%97%AE%E9%A2%98/index.html">
+<meta property="og:title" content="leetcode-回旋镖的数量">
+<meta property="og:url" content="http://example.com/2024/01/08/leetcode-%E5%9B%9E%E6%97%8B%E9%95%96%E7%9A%84%E6%95%B0%E9%87%8F/index.html">
 <meta property="og:site_name" content="Malyue&#39;s Blog">
-<meta property="og:description" content="什么是Redis大Key这里的大key其实指的是某个key所指向的value所占的内存空间较大，从而导致redis的性能下降、内存不足、数据不均衡以及主从同步延迟等问题。 多大的内存才算大key？其实这没有固定的标准，这取决于系统的需求，例如在高并发且低延迟的系统中，可能几kb就构成了大key，影响了redis的性能，而在其他场景下，可能几kb的内存没有什么影响，所以需要根据业务需求和性能指标来确">
+<meta property="og:description" content="leetcode-447 回旋镖的数量 原链接 leetcode-447-mid  给定平面上 n 对 互不相同 的点 points ，其中 points[i] &#x3D; [xi, yi] 。回旋镖 是由点 (i, j, k) 表示的元组 ，其中 i 和 j 之间的距离和 i 和 k 之间的欧式距离相等（需要考虑元组的顺序）。 返回平面上所有回旋镖的数量。 解题：这题没想到什么比较特别的算法，首先想到的">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2024-01-07T09:06:53.000Z">
-<meta property="article:modified_time" content="2024-01-07T13:36:50.977Z">
+<meta property="article:published_time" content="2024-01-08T13:11:46.000Z">
+<meta property="article:modified_time" content="2024-01-08T13:28:45.733Z">
 <meta property="article:author" content="Malyue">
-<meta property="article:tag" content="面试">
-<meta property="article:tag" content="redis">
+<meta property="article:tag" content="算法">
+<meta property="article:tag" content="leetcode">
+<meta property="article:tag" content="每日一题">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>redis大Key问题 - Malyue&#39;s Blog</title>
+  <title>leetcode-回旋镖的数量 - Malyue&#39;s Blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -239,7 +240,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="redis大Key问题"></span>
+            <span id="subtitle" data-typed-text="leetcode-回旋镖的数量"></span>
           
         </div>
 
@@ -250,8 +251,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2024-01-07 17:06" pubdate>
-          2024年1月7日 下午
+        <time datetime="2024-01-08 21:11" pubdate>
+          2024年1月8日 晚上
         </time>
       </span>
     
@@ -262,7 +263,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.4k 字
+          816 字
         
       </span>
     
@@ -273,7 +274,7 @@
         
         
         
-          12 分钟
+          7 分钟
         
       </span>
     
@@ -318,29 +319,22 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">redis大Key问题</h1>
+            <h1 id="seo-header">leetcode-回旋镖的数量</h1>
             
             
               <div class="markdown-body">
                 
-                <h2 id="什么是Redis大Key"><a href="#什么是Redis大Key" class="headerlink" title="什么是Redis大Key"></a>什么是Redis大Key</h2><p>这里的大key其实指的是某个key所指向的value所占的内存空间较大，从而导致redis的性能下降、内存不足、数据不均衡以及主从同步延迟等问题。</p>
-<p>多大的内存才算大key？其实这没有固定的标准，这取决于系统的需求，例如在高并发且低延迟的系统中，可能几kb就构成了大key，影响了redis的性能，而在其他场景下，可能几kb的内存没有什么影响，所以需要根据业务需求和性能指标来确定合理的大key阈值。</p>
-<h2 id="大key会导致什么问题"><a href="#大key会导致什么问题" class="headerlink" title="大key会导致什么问题"></a>大key会导致什么问题</h2><p>当redis中存在大量的大key时，会对性能和内存使用方面产生较大的负面影响，可以从以下四个方面来看：</p>
-<h3 id="内存占用"><a href="#内存占用" class="headerlink" title="内存占用"></a>内存占用</h3><p>这点毋庸置疑，在redis中内存是有一个上限的，如果达到了内存的上限后会可能会引发服务宕机，或者触发redis的驱逐机制，将一些重要的key提前删除</p>
-<p>且在分片集群中，某个数据的内存使用率远超其他数据分片，无法使数据分片的内存资源达到均衡</p>
-<h3 id="网络传输延迟"><a href="#网络传输延迟" class="headerlink" title="网络传输延迟"></a>网络传输延迟</h3><p>redis是单线程的模型来处理请求，那么在处理单个大Key请求的时候，会使得redis实例的带宽使用率被占满，导致自身服务变慢。例如：1个大key占用1MB，每秒访问1000次，就有1000MB的流量。</p>
-<p>且会阻塞了后续的其他请求，导致了严重的性能影响，降低系统的吞吐量。</p>
-<h3 id="主从同步延迟"><a href="#主从同步延迟" class="headerlink" title="主从同步延迟"></a>主从同步延迟</h3><p>主从的同步过程中是从节点从主节点复制数据，当从节点连接到主节点之后，主节点会创建一个后台进程将数据写到一个RDB文件中，同时主节点会将此期间新产生的写命令全部缓存起来，然后将创建的RDB文件发送给从节点进行数据的初始化，再将缓存的写命令发给从节点，从节点接收并执行这些写命令进行数据初始化，完成数据同步。</p>
-<p>而大key的写操作在这里就会在从节点写入时阻塞了从节点的进程，而使得主从同步延迟，进而影响数据一致性。</p>
-<h3 id="持久化"><a href="#持久化" class="headerlink" title="持久化"></a>持久化</h3><p>除了以上的问题以外，对于持久化其实也是有影响的，我们知道在AOF和RDB中，redis是<code>fork</code>了一个子进程来进行持久化操作的，而子进程此时是复制了一份页表过来，和父进行共享数据，如果存在较多大key，会导致对应的页表占用空间也大，从而在<code>fork</code>复制页表的时候阻塞了redis进程</p>
-<p>此外，redis的持久化还有一个<code>写时复制(Copy On Write)</code>机制，在<code>fork</code>持久化的时候，如果共享内存发起了修改操作时，CPU就会触发写保护中断（违反权限导致），操作系统在<code>写保护中断处理函数</code>里进行物理内存的复制，如果是大key的话复制是一个较耗时的机会，如果是在父进程也会阻塞了redis进程</p>
-<h2 id="如何处理大key"><a href="#如何处理大key" class="headerlink" title="如何处理大key"></a>如何处理大key</h2><h3 id="对大key进行拆分"><a href="#对大key进行拆分" class="headerlink" title="对大key进行拆分"></a>对大key进行拆分</h3><p>例如value为<code>hash</code>时，可能是一个<code>hash</code>保存的成员太多，所以需要将一个key拆分为多个<code>hash key</code>。</p>
-<h3 id="对大key进行清理"><a href="#对大key进行清理" class="headerlink" title="对大key进行清理"></a>对大key进行清理</h3><p>将某些不适合存储在redis中大key存至其他存在，并在redis中进行删除</p>
-<blockquote>
-<p>redis4.0之后的版本，可以同个<code>Unlink</code>命令安全删除大key，该命令可以以非阻塞的方式，逐步清理传入的key</p>
-<p>而在之前的版本，可以先通过<code>SCAN</code>命令读取部分数据进行删除，避免一次性删除大量key阻塞</p>
+                <h1 id="leetcode-447-回旋镖的数量"><a href="#leetcode-447-回旋镖的数量" class="headerlink" title="leetcode-447 回旋镖的数量"></a>leetcode-447 回旋镖的数量</h1><blockquote>
+<p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/number-of-boomerangs/description/">原链接 leetcode-447-mid</a></p>
 </blockquote>
-<h3 id="对过期数据定期清理"><a href="#对过期数据定期清理" class="headerlink" title="对过期数据定期清理"></a>对过期数据定期清理</h3><p>堆积大量过期数据可能会造成大key的产生，比如<code>hash</code>类型数据中一直以增量形式写入大量数据，而写入的数据没有任何时效性，那么久很容易造成大key的产生，所以需要使用定时任务进行清理。</p>
+<p>给定平面上 <code>n</code> 对 <strong>互不相同</strong> 的点 <code>points</code> ，其中 <code>points[i] = [xi, yi]</code> 。<strong>回旋镖</strong> 是由点 <code>(i, j, k)</code> 表示的元组 ，其中 <code>i</code> 和 <code>j</code> 之间的距离和 <code>i</code> 和 <code>k</code> 之间的欧式距离相等（<strong>需要考虑元组的顺序</strong>）。</p>
+<p>返回平面上所有回旋镖的数量。</p>
+<h2 id="解题："><a href="#解题：" class="headerlink" title="解题："></a>解题：</h2><p>这题没想到什么比较特别的算法，首先想到的就是枚举+哈希，以每一个<code>point</code>来作为回旋镖拐点，计算其他每个点到当前点的距离，假设有m个点到<code>point</code>的距离相等，那么就需要从这m个点中选两个点来做为回旋镖的两个角，且要考虑顺序，那么就是$A^2_m$ &#x3D; m*(m-1)</p>
+<p>所以思路很简单，即以每一个点为拐点来计算与其他点的距离，然后用一个哈希表来存储，由于距离都是正数，所以直接存其平方值即可，每一次枚举完都去遍历哈希表，按照上述公式去计算以<code>point</code>为拐点，且距离为<code>item</code>的个数有多少个，然后累加即可</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">numberOfBoomerangs</span><span class="hljs-params">(points [][]<span class="hljs-type">int</span>)</span></span> <span class="hljs-type">int</span> &#123;<br>    <span class="hljs-comment">// 枚举，将每一个节点与其他节点的距离都计算出，使用哈希表来存储，之后遍历哈希表即可计算</span><br>    ans := <span class="hljs-number">0</span><br>    <span class="hljs-keyword">for</span> index,point := <span class="hljs-keyword">range</span> points&#123;<br>        m := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">map</span>[<span class="hljs-type">int</span>]<span class="hljs-type">int</span>)<br>        <span class="hljs-keyword">for</span> index2,point2 := <span class="hljs-keyword">range</span> points &#123;<br>            <span class="hljs-keyword">if</span> index == index2&#123;<br>                <span class="hljs-keyword">continue</span><br>            &#125; <br>            dis := (point[<span class="hljs-number">0</span>]-point2[<span class="hljs-number">0</span>])*(point[<span class="hljs-number">0</span>]-point2[<span class="hljs-number">0</span>]) + (point[<span class="hljs-number">1</span>]-point2[<span class="hljs-number">1</span>])*(point[<span class="hljs-number">1</span>]-point2[<span class="hljs-number">1</span>])<br>            m[dis]++<br>        &#125;<br>        <span class="hljs-keyword">for</span> _,item := <span class="hljs-keyword">range</span> m &#123;<br>            ans += item*(item<span class="hljs-number">-1</span>)<br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">return</span> ans<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
 
                 
               </div>
@@ -353,9 +347,11 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/%E9%9D%A2%E8%AF%95/" class="print-no-link">#面试</a>
+        <a href="/tags/%E7%AE%97%E6%B3%95/" class="print-no-link">#算法</a>
       
-        <a href="/tags/redis/" class="print-no-link">#redis</a>
+        <a href="/tags/leetcode/" class="print-no-link">#leetcode</a>
+      
+        <a href="/tags/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98/" class="print-no-link">#每日一题</a>
       
     </div>
   
@@ -367,8 +363,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>redis大Key问题</div>
-      <div>http://example.com/2024/01/07/redis大Key问题/</div>
+      <div>leetcode-回旋镖的数量</div>
+      <div>http://example.com/2024/01/08/leetcode-回旋镖的数量/</div>
     </div>
     <div class="license-meta">
       
@@ -380,7 +376,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2024年1月7日</div>
+          <div>2024年1月8日</div>
         </div>
       
       
@@ -412,18 +408,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2024/01/08/leetcode-%E5%9B%9E%E6%97%8B%E9%95%96%E7%9A%84%E6%95%B0%E9%87%8F/" title="leetcode-回旋镖的数量">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">leetcode-回旋镖的数量</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/12/02/golang-context%E8%A7%A3%E6%9E%90/" title="golang context解析">
-                        <span class="hidden-mobile">golang context解析</span>
+                      <a href="/2024/01/07/redis%E5%A4%A7Key%E9%97%AE%E9%A2%98/" title="redis大Key问题">
+                        <span class="hidden-mobile">redis大Key问题</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
