@@ -4,6 +4,44 @@
   
   
   <entry>
+    <title>5种IO模型</title>
+    <link href="/2024/01/16/5%E7%A7%8DIO%E6%A8%A1%E5%9E%8B/"/>
+    <url>/2024/01/16/5%E7%A7%8DIO%E6%A8%A1%E5%9E%8B/</url>
+    
+    <content type="html"><![CDATA[<h1 id="IO"><a href="#IO" class="headerlink" title="IO"></a>IO</h1><p>IO(input&#x2F;Output),即数据的读取或写入操作，通常分为两个阶段，用户进程空间&lt;-&gt;内核空间，内核空间&lt;-&gt;IO设备(磁盘，网络等)，IO有内存IO、网络IO和磁盘IO三种，平常常说的IO是指后两者。</p><h1 id="5种IO模型"><a href="#5种IO模型" class="headerlink" title="5种IO模型"></a>5种IO模型</h1><h2 id="阻塞IO（BIO-block-io）"><a href="#阻塞IO（BIO-block-io）" class="headerlink" title="阻塞IO（BIO - block io）"></a>阻塞IO（BIO - block io）</h2><p>我们都知道，在操作系统种，进程是无法直接访问IO设备的，所以一般需要进入内核态才可以去访问，所以IO操作需要发起系统调用。</p><p>而阻塞IO模型下，进程发起IO系统调用后，进程会被阻塞，转到内核空间处理，而只有等到整个IO处理完毕，即数据从IO设备中加载到内核缓冲区中，然后再加载到进程中才算IO流程结束，这时才会返回进程，且在进程中可以获取到数据</p><h2 id="非阻塞IO"><a href="#非阻塞IO" class="headerlink" title="非阻塞IO"></a>非阻塞IO</h2><p>非阻塞IO仍然是同步IO模型，即发起IO系统调用之后，相比阻塞IO来看，在数据还没加载到内核时，会从阻塞IO的进程阻塞变为了返回一个错误（例如EWOULDBLOCK），因此进程需要不断检查IO请求是否已经完成，这通常需要大量的轮询操作，比较消耗CPU</p><h2 id="IO复用模型"><a href="#IO复用模型" class="headerlink" title="IO复用模型"></a>IO复用模型</h2><p>多路复用模型，最常见的就是用在网络IO之中，复用的是进程，使得一个进程可以同时处理多个网络连接的IO。</p><p>将多个IO socket注册得到一个复用器(例如select)上，然后用一个进程调用该复用器，复用器会监听所有注册进来的IO，当某个socket有数据到达了，就通知用户进程，不同的监听方法和复用器的选择有关</p><p>常用的几种就是<code>select</code>,<code>poll</code>,<code>epoll</code></p><h2 id="信号驱动IO模型"><a href="#信号驱动IO模型" class="headerlink" title="信号驱动IO模型"></a>信号驱动IO模型</h2><p>当进程发起一个IO操作，会向内核注册一个信号处理函数，然后进程返回不阻塞，当内核数据就绪时会发送一个信号给进程，这时进程再调用信号处理函数读取数据，信号驱动IO是基于硬件中断的。</p><p>这是基于事件的回调模型，其本质还是同步IO，因为数据的实际IO操作，例如从内核缓冲区拷贝到用户空间还是需要被阻塞等待的</p><h2 id="异步IO模型（AIO）"><a href="#异步IO模型（AIO）" class="headerlink" title="异步IO模型（AIO）"></a>异步IO模型（AIO）</h2><p>前四种都是同步IO,只有这一种是异步IO，当进程发起一个IO操作时，进程返回，然后去处理其他的事情，直到内核把整个IO处理完后，会通知进程结果，如果操作成功则直接获取到数据</p>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>操作系统</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>延迟队列的实现（golang）</title>
+    <link href="/2024/01/13/%E5%BB%B6%E8%BF%9F%E9%98%9F%E5%88%97%E7%9A%84%E5%AE%9E%E7%8E%B0%EF%BC%88golang%EF%BC%89/"/>
+    <url>/2024/01/13/%E5%BB%B6%E8%BF%9F%E9%98%9F%E5%88%97%E7%9A%84%E5%AE%9E%E7%8E%B0%EF%BC%88golang%EF%BC%89/</url>
+    
+    <content type="html"><![CDATA[<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>延迟队列是一种特殊的队列，元素入队时需要指定具体到期的时间，这样每次从队头出队的元素就一定是到期的，而且是最先到期的一个元素。添加元素和出队的时间复杂度是O(log(n))</p><p>常用的场景基本都是一些定时任务，或者延迟任务，例如订单功能中，30分钟后取消订单，或者定时任务，例如30分钟后通知用户等情况</p><p>其实从功能上来看就是一个定时任务，那么例如go中其实就有<code>time.After</code>等方法可以设定定时器方法，那么为什么还需要我们自己实现呢？</p><p>这是因为延时队列其实能够做到对定时任务的一个管理功能，以及性能上其实也会更好，如果是单个功能其实直接用<code>time</code>的方法就可以满足我们的需求了，但是如果在大量延迟任务以及动态或者复杂的延迟任务场景，他就无法满足需求了</p><p>在性能上，如果我们有大量的定时任务，那么其实就需要开启大量的goroutine来处理，这样其实相对低效，因为在任务到时间之前这些协程都是在空跑的，没有太大的意义</p><p>在灵活性上，因为定时任务在你开启之时你就需要确定好你的任务执行时间，而如果这时你想要调整它的执行时间的话，其实是不支持的，只能通过<code>reset</code>方法来重置定时器了</p><h1 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h1><p>延迟队列每次都需要出队最快到期的元素，其实就是一个小根堆的数据结构，堆正是用来获取最值的，使用堆我们可以实现O(log(n))的时间复杂度</p><p>这里接下来主要参考的是nq</p>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>golang</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>leetcode-回旋镖的数量</title>
     <link href="/2024/01/08/leetcode-%E5%9B%9E%E6%97%8B%E9%95%96%E7%9A%84%E6%95%B0%E9%87%8F/"/>
     <url>/2024/01/08/leetcode-%E5%9B%9E%E6%97%8B%E9%95%96%E7%9A%84%E6%95%B0%E9%87%8F/</url>

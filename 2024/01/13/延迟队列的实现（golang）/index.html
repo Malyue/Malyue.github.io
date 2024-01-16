@@ -16,24 +16,22 @@
   <meta name="author" content="Malyue">
   <meta name="keywords" content="">
   
-    <meta name="description" content="leetcode-447 回旋镖的数量 原链接 leetcode-447-mid  给定平面上 n 对 互不相同 的点 points ，其中 points[i] &#x3D; [xi, yi] 。回旋镖 是由点 (i, j, k) 表示的元组 ，其中 i 和 j 之间的距离和 i 和 k 之间的欧式距离相等（需要考虑元组的顺序）。 返回平面上所有回旋镖的数量。 解题：这题没想到什么比较特别的算法，首先想到的">
+    <meta name="description" content="背景延迟队列是一种特殊的队列，元素入队时需要指定具体到期的时间，这样每次从队头出队的元素就一定是到期的，而且是最先到期的一个元素。添加元素和出队的时间复杂度是O(log(n)) 常用的场景基本都是一些定时任务，或者延迟任务，例如订单功能中，30分钟后取消订单，或者定时任务，例如30分钟后通知用户等情况 其实从功能上来看就是一个定时任务，那么例如go中其实就有time.After等方法可以设定定时器">
 <meta property="og:type" content="article">
-<meta property="og:title" content="leetcode-回旋镖的数量">
-<meta property="og:url" content="http://example.com/2024/01/08/leetcode-%E5%9B%9E%E6%97%8B%E9%95%96%E7%9A%84%E6%95%B0%E9%87%8F/index.html">
+<meta property="og:title" content="延迟队列的实现（golang）">
+<meta property="og:url" content="http://example.com/2024/01/13/%E5%BB%B6%E8%BF%9F%E9%98%9F%E5%88%97%E7%9A%84%E5%AE%9E%E7%8E%B0%EF%BC%88golang%EF%BC%89/index.html">
 <meta property="og:site_name" content="Malyue&#39;s Blog">
-<meta property="og:description" content="leetcode-447 回旋镖的数量 原链接 leetcode-447-mid  给定平面上 n 对 互不相同 的点 points ，其中 points[i] &#x3D; [xi, yi] 。回旋镖 是由点 (i, j, k) 表示的元组 ，其中 i 和 j 之间的距离和 i 和 k 之间的欧式距离相等（需要考虑元组的顺序）。 返回平面上所有回旋镖的数量。 解题：这题没想到什么比较特别的算法，首先想到的">
+<meta property="og:description" content="背景延迟队列是一种特殊的队列，元素入队时需要指定具体到期的时间，这样每次从队头出队的元素就一定是到期的，而且是最先到期的一个元素。添加元素和出队的时间复杂度是O(log(n)) 常用的场景基本都是一些定时任务，或者延迟任务，例如订单功能中，30分钟后取消订单，或者定时任务，例如30分钟后通知用户等情况 其实从功能上来看就是一个定时任务，那么例如go中其实就有time.After等方法可以设定定时器">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2024-01-08T13:11:46.000Z">
-<meta property="article:modified_time" content="2024-01-08T13:28:45.733Z">
+<meta property="article:published_time" content="2024-01-13T08:40:03.000Z">
+<meta property="article:modified_time" content="2024-01-16T08:22:50.472Z">
 <meta property="article:author" content="Malyue">
-<meta property="article:tag" content="算法">
-<meta property="article:tag" content="leetcode">
-<meta property="article:tag" content="每日一题">
+<meta property="article:tag" content="golang">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>leetcode-回旋镖的数量 - Malyue&#39;s Blog</title>
+  <title>延迟队列的实现（golang） - Malyue&#39;s Blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -240,7 +238,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="leetcode-回旋镖的数量"></span>
+            <span id="subtitle" data-typed-text="延迟队列的实现（golang）"></span>
           
         </div>
 
@@ -251,8 +249,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2024-01-08 21:11" pubdate>
-          2024年1月8日 晚上
+        <time datetime="2024-01-13 16:40" pubdate>
+          2024年1月13日 下午
         </time>
       </span>
     
@@ -263,7 +261,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          816 字
+          566 字
         
       </span>
     
@@ -274,7 +272,7 @@
         
         
         
-          7 分钟
+          5 分钟
         
       </span>
     
@@ -319,22 +317,19 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">leetcode-回旋镖的数量</h1>
+            <h1 id="seo-header">延迟队列的实现（golang）</h1>
             
             
               <div class="markdown-body">
                 
-                <h1 id="leetcode-447-回旋镖的数量"><a href="#leetcode-447-回旋镖的数量" class="headerlink" title="leetcode-447 回旋镖的数量"></a>leetcode-447 回旋镖的数量</h1><blockquote>
-<p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/number-of-boomerangs/description/">原链接 leetcode-447-mid</a></p>
-</blockquote>
-<p>给定平面上 <code>n</code> 对 <strong>互不相同</strong> 的点 <code>points</code> ，其中 <code>points[i] = [xi, yi]</code> 。<strong>回旋镖</strong> 是由点 <code>(i, j, k)</code> 表示的元组 ，其中 <code>i</code> 和 <code>j</code> 之间的距离和 <code>i</code> 和 <code>k</code> 之间的欧式距离相等（<strong>需要考虑元组的顺序</strong>）。</p>
-<p>返回平面上所有回旋镖的数量。</p>
-<h2 id="解题："><a href="#解题：" class="headerlink" title="解题："></a>解题：</h2><p>这题没想到什么比较特别的算法，首先想到的就是枚举+哈希，以每一个<code>point</code>来作为回旋镖拐点，计算其他每个点到当前点的距离，假设有m个点到<code>point</code>的距离相等，那么就需要从这m个点中选两个点来做为回旋镖的两个角，且要考虑顺序，那么就是$A^2_m$ &#x3D; m*(m-1)</p>
-<p>所以思路很简单，即以每一个点为拐点来计算与其他点的距离，然后用一个哈希表来存储，由于距离都是正数，所以直接存其平方值即可，每一次枚举完都去遍历哈希表，按照上述公式去计算以<code>point</code>为拐点，且距离为<code>item</code>的个数有多少个，然后累加即可</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">numberOfBoomerangs</span><span class="hljs-params">(points [][]<span class="hljs-type">int</span>)</span></span> <span class="hljs-type">int</span> &#123;<br>    <span class="hljs-comment">// 枚举，将每一个节点与其他节点的距离都计算出，使用哈希表来存储，之后遍历哈希表即可计算</span><br>    ans := <span class="hljs-number">0</span><br>    <span class="hljs-keyword">for</span> index,point := <span class="hljs-keyword">range</span> points&#123;<br>        m := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">map</span>[<span class="hljs-type">int</span>]<span class="hljs-type">int</span>)<br>        <span class="hljs-keyword">for</span> index2,point2 := <span class="hljs-keyword">range</span> points &#123;<br>            <span class="hljs-keyword">if</span> index == index2&#123;<br>                <span class="hljs-keyword">continue</span><br>            &#125; <br>            dis := (point[<span class="hljs-number">0</span>]-point2[<span class="hljs-number">0</span>])*(point[<span class="hljs-number">0</span>]-point2[<span class="hljs-number">0</span>]) + (point[<span class="hljs-number">1</span>]-point2[<span class="hljs-number">1</span>])*(point[<span class="hljs-number">1</span>]-point2[<span class="hljs-number">1</span>])<br>            m[dis]++<br>        &#125;<br>        <span class="hljs-keyword">for</span> _,item := <span class="hljs-keyword">range</span> m &#123;<br>            ans += item*(item<span class="hljs-number">-1</span>)<br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">return</span> ans<br>&#125;<br></code></pre></td></tr></table></figure>
-
-
-
+                <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>延迟队列是一种特殊的队列，元素入队时需要指定具体到期的时间，这样每次从队头出队的元素就一定是到期的，而且是最先到期的一个元素。添加元素和出队的时间复杂度是O(log(n))</p>
+<p>常用的场景基本都是一些定时任务，或者延迟任务，例如订单功能中，30分钟后取消订单，或者定时任务，例如30分钟后通知用户等情况</p>
+<p>其实从功能上来看就是一个定时任务，那么例如go中其实就有<code>time.After</code>等方法可以设定定时器方法，那么为什么还需要我们自己实现呢？</p>
+<p>这是因为延时队列其实能够做到对定时任务的一个管理功能，以及性能上其实也会更好，如果是单个功能其实直接用<code>time</code>的方法就可以满足我们的需求了，但是如果在大量延迟任务以及动态或者复杂的延迟任务场景，他就无法满足需求了</p>
+<p>在性能上，如果我们有大量的定时任务，那么其实就需要开启大量的goroutine来处理，这样其实相对低效，因为在任务到时间之前这些协程都是在空跑的，没有太大的意义</p>
+<p>在灵活性上，因为定时任务在你开启之时你就需要确定好你的任务执行时间，而如果这时你想要调整它的执行时间的话，其实是不支持的，只能通过<code>reset</code>方法来重置定时器了</p>
+<h1 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h1><p>延迟队列每次都需要出队最快到期的元素，其实就是一个小根堆的数据结构，堆正是用来获取最值的，使用堆我们可以实现O(log(n))的时间复杂度</p>
+<p>这里接下来主要参考的是nq</p>
 
                 
               </div>
@@ -347,11 +342,7 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/%E7%AE%97%E6%B3%95/" class="print-no-link">#算法</a>
-      
-        <a href="/tags/leetcode/" class="print-no-link">#leetcode</a>
-      
-        <a href="/tags/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98/" class="print-no-link">#每日一题</a>
+        <a href="/tags/golang/" class="print-no-link">#golang</a>
       
     </div>
   
@@ -363,8 +354,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>leetcode-回旋镖的数量</div>
-      <div>http://example.com/2024/01/08/leetcode-回旋镖的数量/</div>
+      <div>延迟队列的实现（golang）</div>
+      <div>http://example.com/2024/01/13/延迟队列的实现（golang）/</div>
     </div>
     <div class="license-meta">
       
@@ -376,7 +367,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2024年1月8日</div>
+          <div>2024年1月13日</div>
         </div>
       
       
@@ -408,9 +399,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2024/01/13/%E5%BB%B6%E8%BF%9F%E9%98%9F%E5%88%97%E7%9A%84%E5%AE%9E%E7%8E%B0%EF%BC%88golang%EF%BC%89/" title="延迟队列的实现（golang）">
+                      <a href="/2024/01/16/5%E7%A7%8DIO%E6%A8%A1%E5%9E%8B/" title="5种IO模型">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">延迟队列的实现（golang）</span>
+                        <span class="hidden-mobile">5种IO模型</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -418,8 +409,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2024/01/07/redis%E5%A4%A7Key%E9%97%AE%E9%A2%98/" title="redis大Key问题">
-                        <span class="hidden-mobile">redis大Key问题</span>
+                      <a href="/2024/01/08/leetcode-%E5%9B%9E%E6%97%8B%E9%95%96%E7%9A%84%E6%95%B0%E9%87%8F/" title="leetcode-回旋镖的数量">
+                        <span class="hidden-mobile">leetcode-回旋镖的数量</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
